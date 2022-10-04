@@ -1,5 +1,7 @@
-import { Box, Flex, Icon, Heading, HStack } from "@chakra-ui/react";
+import { Box, Flex, Icon, Heading } from "@chakra-ui/react";
 import { MdHelpOutline, MdBarChart } from "react-icons/md";
+
+import { Keyboard } from "./Keyboard";
 
 export const Game = () => {
   return (
@@ -30,6 +32,8 @@ export const Game = () => {
           </Heading>
           <Icon as={MdBarChart} color="#fff" boxSize="24px" />
         </Flex>
+
+        <Keyboard />
       </Flex>
     </Flex>
   );
