@@ -1,37 +1,36 @@
-import { ReactNode } from "react";
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { ReactNode, MouseEvent } from "react";
+import { Box, Button } from "@chakra-ui/react";
 import type { ButtonProps } from "@chakra-ui/react";
-const keys = [
+
+const KEYS = [
   ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
   ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
   ["z", "x", "c", "v", "b", "n", "m"],
 ];
 
-const Key = ({
-  value,
-  flexGrow,
-}: {
+const DELETE = "DEL";
+const ENTER = "ENTER";
+
+type KeyProps = {
   value: string;
-  flexGrow?: ButtonProps["flexGrow"];
-}) => (
+  flex?: ButtonProps["flex"];
+  onClick(event: MouseEvent<HTMLButtonElement>): void;
+};
+
+const Key = ({ value, flex = "1", onClick }: KeyProps) => (
   <Button
+    backgroundColor="rgb(129, 131, 132)"
+    border="0"
+    borderRadius="4px"
+    color="rgb(215, 218, 220)"
+    cursor="pointer"
     fontFamily="inherit"
     fontWeight="bold"
-    border="0"
-    padding="0"
-    marginRight="6px"
     height="58px"
-    borderRadius="4px"
-    cursor="pointer"
-    userSelect="none"
-    backgroundColor="rgb(129, 131, 132)"
-    color="rgb(215, 218, 220)"
-    flexGrow={flexGrow || "1"}
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
+    marginRight="6px"
     textTransform="uppercase"
-    data-key={value}
+    userSelect="none"
+    {...{ flex, onClick, value }}
   >
     {value}
   </Button>
@@ -39,37 +38,49 @@ const Key = ({
 
 const KeyboardRow = ({ children }: { children: ReactNode }) => (
   <Box
+    __css={{ touchAction: "manipulation" }}
     display="flex"
     justifyContent="center"
-    width="100%"
     margin="0 auto 8px"
-    __css={{ touchAction: "manipulation" }}
+    width="100%"
   >
     {children}
   </Box>
 );
 
-export const Keyboard = () => {
+export const Keyboard = ({ onDelete, onEnter, onLetterSelect }) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    const { value } = event.target as HTMLButtonElement;
+
+    if (value === DELETE) {
+      onDelete();
+    } else if (value === ENTER) {
+      onEnter();
+    } else {
+      onLetterSelect(value);
+    }
+  };
+
   return (
     <Box height="200px" width="100%">
       <KeyboardRow>
-        {keys[0].map((key) => (
-          <Key {...{ key }} value={key} />
+        {KEYS[0].map((key) => (
+          <Key {...{ key }} value={key} onClick={handleClick} />
         ))}
       </KeyboardRow>
       <KeyboardRow>
         <Box flexGrow={0.5} />
-        {keys[1].map((key) => (
-          <Key {...{ key }} value={key} />
+        {KEYS[1].map((key) => (
+          <Key {...{ key }} value={key} onClick={handleClick} />
         ))}
         <Box flexGrow={0.5} />
       </KeyboardRow>
       <KeyboardRow>
-        <Key value={"ENTER"} flexGrow={1.5} />
-        {keys[2].map((key) => (
-          <Key {...{ key }} value={key} />
+        <Key value={ENTER} flex={1.5} onClick={handleClick} />
+        {KEYS[2].map((key) => (
+          <Key {...{ key }} value={key} onClick={handleClick} />
         ))}
-        <Key value={"DEL"} flexGrow={1.5} />
+        <Key value={DELETE} flex={1.5} onClick={handleClick} />
       </KeyboardRow>
     </Box>
   );
