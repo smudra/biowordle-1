@@ -1,4 +1,4 @@
-import { ReactNode, MouseEvent } from "react";
+import { ReactNode, MouseEvent, useEffect } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import type { ButtonProps } from "@chakra-ui/react";
 
@@ -60,6 +60,26 @@ export const Keyboard = ({ onDelete, onEnter, onLetterSelect }) => {
       onLetterSelect(value);
     }
   };
+
+  const handleKeyPress = ({ key }: KeyboardEvent) => {
+    if (key === "Backspace") {
+      onDelete();
+    } else if (key === "Enter") {
+      onEnter();
+    } else {
+      const match = /^[a-zA-Z]+$/.test(key);
+      if (match && key.length === 1) {
+        console.log("first", key);
+        onLetterSelect(key);
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keyup", handleKeyPress);
+
+    return () => window.removeEventListener("keyup", handleKeyPress);
+  }, []);
 
   return (
     <Box height="200px" width="100%">

@@ -92,7 +92,6 @@ export const Game = () => {
     if (currentWord.length !== WORD.length) {
       return;
     }
-
     // check if it's a word from the db
     // if not, check it's a word from the dictionary
 
@@ -110,7 +109,7 @@ export const Game = () => {
         const okSelected = window.confirm("Well done!");
         if (okSelected) {
           clearBoard();
-          showResult();
+          // showResult();
         }
         return;
       }, 1200);
@@ -121,7 +120,7 @@ export const Game = () => {
 
   const handleLetterSelect = (letter: string) => {
     if (!currentWord || currentWord.length < 5) {
-      setCurrentWord(currentWord + letter);
+      setCurrentWord((prevWord) => prevWord + letter);
       setGuessedLetters((currentLetters) => [...currentLetters, letter]);
     }
   };
