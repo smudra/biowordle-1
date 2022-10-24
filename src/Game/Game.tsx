@@ -4,8 +4,7 @@ import { MdHelpOutline, MdBarChart } from "react-icons/md";
 
 import { GameBoard } from "./GameBoard";
 import { Keyboard } from "./Keyboard";
-
-const WORD = "APPLE";
+import { useGetWords } from "./useGetWords";
 
 export enum TileColors {
   green = "rgb(83, 141, 78)",
@@ -14,27 +13,28 @@ export enum TileColors {
 }
 
 export const Game = () => {
-  const [guessedWords, setGuessedWords] = useState([[]]);
-  const [currentWord, setCurrentWord] = useState("");
+  const [guessedWord, setGuessedWord] = useState("");
   const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
   const [tileColors, setTileColors] = useState<TileColors[]>([]);
 
+  const { currentWord, newWords, usedWords } = useGetWords();
+
   const handleDelete = () => {
-    if (!currentWord) {
+    if (!guessedWord) {
       return;
     }
 
-    setCurrentWord((prevWord) => prevWord.slice(0, -1));
+    setGuessedWord((prevWord) => prevWord.slice(0, -1));
     setGuessedLetters((prevArr) => prevArr.slice(0, -1));
   };
 
   const clearBoard = () => {
-    setCurrentWord("");
+    setGuessedWord("");
     setGuessedLetters([]);
     setTileColors([]);
   };
 
-  function getIndicesOfLetter(letter, arr) {
+  function getIndicesOfLetter(letter: string, arr: string[]) {
     const indices = [];
     let idx = arr.indexOf(letter);
     while (idx != -1) {
@@ -44,14 +44,16 @@ export const Game = () => {
     return indices;
   }
 
-  const getTileColor = (letter, index) => {
-    const isCorrectLetter = WORD.toUpperCase().includes(letter.toUpperCase());
+  const getTileColor = (letter: string, index: number) => {
+    const isCorrectLetter = currentWord
+      .toUpperCase()
+      .includes(letter.toUpperCase());
 
     if (!isCorrectLetter) {
       return TileColors.dark;
     }
 
-    const letterInThatPosition = WORD.charAt(index).toUpperCase();
+    const letterInThatPosition = currentWord.charAt(index).toUpperCase();
     const isCorrectPosition = letter.toUpperCase() === letterInThatPosition;
 
     if (isCorrectPosition) {
@@ -59,26 +61,26 @@ export const Game = () => {
     }
 
     const isGuessedMoreThanOnce =
-      currentWord.split("").filter((l) => l === letter).length > 1;
+      guessedWord.split("").filter((l) => l === letter).length > 1;
 
     if (!isGuessedMoreThanOnce) {
       return TileColors.yellow;
     }
 
     const existsMoreThanOnce =
-      currentWord.split("").filter((l) => l === letter).length > 1;
+      guessedWord.split("").filter((l) => l === letter).length > 1;
 
     // is guessed more than once and exists more than once
     if (existsMoreThanOnce) {
       return TileColors.yellow;
     }
 
-    const hasBeenGuessedAlready = currentWord.split("").indexOf(letter) < index;
+    const hasBeenGuessedAlready = guessedWord.split("").indexOf(letter) < index;
 
-    const indices = getIndicesOfLetter(letter, currentWord.split(""));
+    const indices = getIndicesOfLetter(letter, guessedWord.split(""));
     const otherIndices = indices.filter((i) => i !== index);
     const isGuessedCorrectlyLater = otherIndices.some(
-      (i) => i > index && currentWord.split("")[i] === letter
+      (i) => i > index && guessedWord.split("")[i] === letter
     );
 
     if (!hasBeenGuessedAlready && !isGuessedCorrectlyLater) {
@@ -88,23 +90,48 @@ export const Game = () => {
     return TileColors.yellow;
   };
 
-  const handleSubmit = () => {
-    if (currentWord.length !== WORD.length) {
+  const checkIsWordFromLibrary = (word: string) => {
+    const isUsedWord = usedWords?.some(
+      (w) => w.toUpperCase() === word.toUpperCase()
+    );
+
+    const isNewWord = newWords?.some(
+      (w) => w.toUpperCase() === word.toUpperCase()
+    );
+
+    return isUsedWord || isNewWord;
+  };
+
+  const checkIsWordFromDictionary = async (word: string) => {
+    const res = await fetch(
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${guessedWord.toLowerCase()}`
+    );
+
+    if (!res.ok) {
+      throw Error();
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (guessedWord.length !== currentWord.length) {
       return;
     }
-    // check if it's a word from the db
-    // if not, check it's a word from the dictionary
+
+    const isWordFromLibrary = checkIsWordFromLibrary(guessedWord);
+    if (!isWordFromLibrary) {
+      checkIsWordFromDictionary(guessedWord);
+    }
 
     const interval = 200;
-    currentWord.split("").forEach((letter, index) => {
+    guessedWord.split("").forEach((letter, index) => {
       setTimeout(() => {
         const color = getTileColor(letter, index);
         setTileColors((prevColors) => [...prevColors, color]);
       }, index * interval);
     });
 
-    console.log({ currentWord, WORD }, currentWord === WORD);
-    if (currentWord.toUpperCase() === WORD.toUpperCase()) {
+    console.log({ guessedWord, currentWord });
+    if (guessedWord.toUpperCase() === currentWord.toUpperCase()) {
       setTimeout(() => {
         const okSelected = window.confirm("Well done!");
         if (okSelected) {
@@ -114,13 +141,13 @@ export const Game = () => {
         return;
       }, 1200);
     } else {
-      setCurrentWord("");
+      setGuessedWord("");
     }
   };
 
   const handleLetterSelect = (letter: string) => {
-    if (!currentWord || currentWord.length < 5) {
-      setCurrentWord((prevWord) => prevWord + letter);
+    if (!guessedWord || guessedWord.length < 5) {
+      setGuessedWord((prevWord) => prevWord + letter);
       setGuessedLetters((currentLetters) => [...currentLetters, letter]);
     }
   };
