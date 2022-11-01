@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Box, Flex, Icon, Heading } from "@chakra-ui/react";
+import { Flex, Icon, Heading } from "@chakra-ui/react";
 import { MdHelpOutline, MdBarChart } from "react-icons/md";
+import { format } from "date-fns";
+import { useLoaderData } from "react-router-dom";
 
 import { GameBoard } from "./GameBoard";
 import { Keyboard } from "./Keyboard";
-import { useGetWords } from "./useGetWords";
+import { useIncorrectWords } from "./useIncorrectWords";
 
 export enum TileColors {
   green = "rgb(83, 141, 78)",
@@ -12,12 +14,23 @@ export enum TileColors {
   dark = "rgb(58, 58, 60)",
 }
 
+type LoaderData = {
+  words: { value: string; date: string }[];
+};
+
+const FORMAT_STRING = "y-L-d";
+
 export const Game = () => {
   const [guessedWord, setGuessedWord] = useState("");
   const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
   const [tileColors, setTileColors] = useState<TileColors[]>([]);
 
-  const { currentWord, newWords, usedWords } = useGetWords();
+  const { words } = useLoaderData() as LoaderData;
+  const { logIncorrectWord } = useIncorrectWords();
+
+  const currentWord = words.find(
+    ({ date }) => date === format(new Date(), FORMAT_STRING)
+  );
 
   const handleDelete = () => {
     if (!guessedWord) {
@@ -45,15 +58,15 @@ export const Game = () => {
   }
 
   const getTileColor = (letter: string, index: number) => {
-    const isCorrectLetter = currentWord
-      .toUpperCase()
+    const isCorrectLetter = currentWord?.value
+      ?.toUpperCase()
       .includes(letter.toUpperCase());
 
     if (!isCorrectLetter) {
       return TileColors.dark;
     }
 
-    const letterInThatPosition = currentWord.charAt(index).toUpperCase();
+    const letterInThatPosition = currentWord?.value.charAt(index).toUpperCase();
     const isCorrectPosition = letter.toUpperCase() === letterInThatPosition;
 
     if (isCorrectPosition) {
@@ -91,35 +104,35 @@ export const Game = () => {
   };
 
   const checkIsWordFromLibrary = (word: string) => {
-    const isUsedWord = usedWords?.some(
-      (w) => w.toUpperCase() === word.toUpperCase()
+    const isAlreadyUsed = words?.some(
+      ({ value }) => value.toUpperCase() === word.toUpperCase()
     );
 
-    const isNewWord = newWords?.some(
-      (w) => w.toUpperCase() === word.toUpperCase()
-    );
-
-    return isUsedWord || isNewWord;
+    return isAlreadyUsed;
   };
 
   const checkIsWordFromDictionary = async (word: string) => {
     const res = await fetch(
-      `https://api.dictionaryapi.dev/api/v2/entries/en/${guessedWord.toLowerCase()}`
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`
     );
 
-    if (!res.ok) {
-      throw Error();
-    }
+    return res.ok;
   };
 
   const handleSubmit = async () => {
-    if (guessedWord.length !== currentWord.length) {
+    if (guessedWord.length !== currentWord?.value.length) {
       return;
     }
 
     const isWordFromLibrary = checkIsWordFromLibrary(guessedWord);
     if (!isWordFromLibrary) {
-      checkIsWordFromDictionary(guessedWord);
+      const isWordFromDisctionary = await checkIsWordFromDictionary(
+        guessedWord
+      );
+      if (!isWordFromDisctionary) {
+        logIncorrectWord(guessedWord, currentWord?.value);
+        return;
+      }
     }
 
     const interval = 200;
@@ -131,7 +144,7 @@ export const Game = () => {
     });
 
     console.log({ guessedWord, currentWord });
-    if (guessedWord.toUpperCase() === currentWord.toUpperCase()) {
+    if (guessedWord.toUpperCase() === currentWord?.value?.toUpperCase()) {
       setTimeout(() => {
         const okSelected = window.confirm("Well done!");
         if (okSelected) {
@@ -146,7 +159,11 @@ export const Game = () => {
   };
 
   const handleLetterSelect = (letter: string) => {
-    if (!guessedWord || guessedWord.length < 5) {
+    if (!currentWord?.value) {
+      return;
+    }
+
+    if (!guessedWord || guessedWord.length < currentWord.value.length) {
       setGuessedWord((prevWord) => prevWord + letter);
       setGuessedLetters((currentLetters) => [...currentLetters, letter]);
     }
@@ -180,7 +197,10 @@ export const Game = () => {
           </Heading>
           <Icon as={MdBarChart} color="#fff" boxSize="24px" />
         </Flex>
-        <GameBoard {...{ guessedLetters, tileColors }} />
+        <GameBoard
+          wordLength={currentWord?.value?.length || 5}
+          {...{ guessedLetters, tileColors }}
+        />
         <Keyboard
           onLetterSelect={handleLetterSelect}
           onEnter={handleSubmit}

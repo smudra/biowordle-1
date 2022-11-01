@@ -15,15 +15,19 @@
     "@emotion/styled": "^11.10.4",
     "animate.css": "^4.1.1",
     "clsx": "^1.2.1",
+    "date-fns": "^2.29.3",
     "firebase": "^9.12.1",
     "framer-motion": "^7.5.2",
     "react": "^18.2.0",
     "react-animated-css": "^1.2.1",
+    "react-calendar": "^3.9.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.4.0"
+    "react-icons": "^4.4.0",
+    "react-router-dom": "^6.4.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.17",
+    "@types/react-calendar": "^3.5.3",
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.1.0",
     "eslint-plugin-react-hooks": "^4.6.0",

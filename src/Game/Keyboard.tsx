@@ -48,7 +48,17 @@ const KeyboardRow = ({ children }: { children: ReactNode }) => (
   </Box>
 );
 
-export const Keyboard = ({ onDelete, onEnter, onLetterSelect }) => {
+type KeyboardProps = {
+  onDelete(): void;
+  onEnter(): void;
+  onLetterSelect(val: string): void;
+};
+
+export const Keyboard = ({
+  onDelete,
+  onEnter,
+  onLetterSelect,
+}: KeyboardProps) => {
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     const { value } = event.target as HTMLButtonElement;
 

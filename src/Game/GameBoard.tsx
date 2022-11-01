@@ -8,9 +8,14 @@ import { TileColors } from "./Game";
 type Props = {
   guessedLetters: string[];
   tileColors: TileColors[];
+  wordLength: number;
 };
 
-export const GameBoard = ({ guessedLetters, tileColors }: Props) => {
+export const GameBoard = ({
+  guessedLetters,
+  tileColors,
+  wordLength,
+}: Props) => {
   const [isVisible, setVisibility] = useBoolean();
 
   useEffect(() => {
@@ -31,12 +36,12 @@ export const GameBoard = ({ guessedLetters, tileColors }: Props) => {
         boxSizing="border-box"
         display="grid"
         gridGap="5px"
-        gridTemplateColumns="repeat(5, 1fr)"
+        gridTemplateColumns={`repeat(${wordLength}, 1fr)`}
         padding="10px"
         alignItems="center"
       >
         {isVisible &&
-          Array.from({ length: 30 }).map((_, i) => (
+          Array.from({ length: wordLength * 6 }).map((_, i) => (
             <Center
               border="2px solid rgb(58, 58, 60)"
               boxSizing="border-box"

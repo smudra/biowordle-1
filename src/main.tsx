@@ -1,10 +1,28 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { ChakraProvider } from "@chakra-ui/react";
+
+import { Game, loader as gameLoader } from "./Game";
+import { Admin } from "./Admin";
 import "./index.css";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Game />,
+    loader: gameLoader,
+  },
+  {
+    path: "/admin",
+    element: <Admin />,
+  },
+]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <App />
+    <ChakraProvider>
+      <RouterProvider router={router} />
+    </ChakraProvider>
   </React.StrictMode>
 );
