@@ -49,21 +49,19 @@ const KeyboardRow = ({ children }: { children: ReactNode }) => (
 );
 
 type KeyboardProps = {
-  onDelete(): void;
+  onDelete?(): void;
   onEnter(): void;
   onLetterSelect(val: string): void;
 };
 
-export const Keyboard = ({
-  onDelete,
-  onEnter,
-  onLetterSelect,
-}: KeyboardProps) => {
+export const Keyboard = (props: KeyboardProps) => {
+  const { onDelete, onEnter, onLetterSelect } = props;
+
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     const { value } = event.target as HTMLButtonElement;
 
     if (value === DELETE) {
-      onDelete();
+      onDelete?.();
     } else if (value === ENTER) {
       onEnter();
     } else {
@@ -73,7 +71,7 @@ export const Keyboard = ({
 
   const handleKeyPress = ({ key }: KeyboardEvent) => {
     if (key === "Backspace") {
-      onDelete();
+      onDelete?.();
     } else if (key === "Enter") {
       onEnter();
     } else {
@@ -89,7 +87,7 @@ export const Keyboard = ({
     window.addEventListener("keyup", handleKeyPress);
 
     return () => window.removeEventListener("keyup", handleKeyPress);
-  }, []);
+  }, [onDelete]);
 
   return (
     <Box height="200px" width="100%">

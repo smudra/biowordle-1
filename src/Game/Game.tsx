@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Flex, Icon, Heading } from "@chakra-ui/react";
 import { MdHelpOutline, MdBarChart } from "react-icons/md";
 import { format } from "date-fns";
@@ -32,14 +32,10 @@ export const Game = () => {
     ({ date }) => date === format(new Date(), FORMAT_STRING)
   );
 
-  const handleDelete = () => {
-    if (!guessedWord) {
-      return;
-    }
-
+  const handleDelete = useCallback(() => {
     setGuessedWord((prevWord) => prevWord.slice(0, -1));
     setGuessedLetters((prevArr) => prevArr.slice(0, -1));
-  };
+  }, [guessedWord]);
 
   const clearBoard = () => {
     setGuessedWord("");
@@ -143,7 +139,6 @@ export const Game = () => {
       }, index * interval);
     });
 
-    console.log({ guessedWord, currentWord });
     if (guessedWord.toUpperCase() === currentWord?.value?.toUpperCase()) {
       setTimeout(() => {
         const okSelected = window.confirm("Well done!");
@@ -204,7 +199,7 @@ export const Game = () => {
         <Keyboard
           onLetterSelect={handleLetterSelect}
           onEnter={handleSubmit}
-          onDelete={handleDelete}
+          onDelete={guessedWord ? handleDelete : undefined}
         />
       </Flex>
     </Flex>
