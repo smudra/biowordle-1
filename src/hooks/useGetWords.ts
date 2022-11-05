@@ -2,7 +2,7 @@ import { useEffect, useCallback, useState } from "react";
 
 import { getDocs, query, collection } from "firebase/firestore";
 
-import { db } from "../../config/firebase.js";
+import { db } from "../../config/firebase";
 
 type Word = { value: string; date: string };
 

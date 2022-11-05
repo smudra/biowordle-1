@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 
-import { doc, addDoc, collection, Timestamp } from "firebase/firestore";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
 
-import { db } from "../../config/firebase.js";
+import { db } from "../../config/firebase";
 
 type UseIncorrectWords = () => {
   logIncorrectWord(guessedWord: string, currentWord: string): Promise<void>;

@@ -1,8 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Flex, Icon, Heading } from "@chakra-ui/react";
 import { MdHelpOutline, MdBarChart } from "react-icons/md";
 import { format } from "date-fns";
 import { useLoaderData } from "react-router-dom";
+import invariant from "tiny-invariant";
 
 import { GameBoard } from "./GameBoard";
 import { Keyboard } from "./Keyboard";
@@ -32,18 +33,65 @@ export const Game = () => {
     ({ date }) => date === format(new Date(), FORMAT_STRING)
   );
 
+  invariant(
+    currentWord,
+    "There is no word set for today. Please contact game admin!"
+  );
+
+  const loadGameState = useCallback(() => {
+    const gameStateString = window.localStorage.getItem("gameState");
+    if (!gameStateString) {
+      return;
+    }
+
+    const gameState = JSON.parse(gameStateString);
+    if (gameState?.currentWordValue !== currentWord.value) {
+      return;
+    }
+
+    setGuessedLetters(gameState.guessedLetters);
+    setTileColors(gameState.tileColors);
+  }, [currentWord]);
+
+  const storeGameState = useCallback(
+    (tileColors: TileColors[]) => {
+      if (!guessedLetters.length) {
+        return;
+      }
+
+      const storedGameState = window.localStorage.getItem("gameState");
+      const gameState = {
+        currentWordValue: currentWord.value,
+        guessedLetters,
+        tileColors,
+      };
+
+      const gameStateString = JSON.stringify(gameState);
+      if (gameStateString === storedGameState) {
+        return;
+      }
+
+      window.localStorage.setItem("gameState", JSON.stringify(gameState));
+    },
+    [currentWord, guessedLetters]
+  );
+
+  useEffect(() => {
+    loadGameState();
+  }, [loadGameState]);
+
   const handleDelete = useCallback(() => {
     setGuessedWord((prevWord) => prevWord.slice(0, -1));
     setGuessedLetters((prevArr) => prevArr.slice(0, -1));
-  }, [guessedWord]);
+  }, []);
 
-  const clearBoard = () => {
-    setGuessedWord("");
-    setGuessedLetters([]);
-    setTileColors([]);
-  };
+  // const clearBoard = () => {
+  //   setGuessedWord("");
+  //   setGuessedLetters([]);
+  //   setTileColors([]);
+  // };
 
-  function getIndicesOfLetter(letter: string, arr: string[]) {
+  const getIndicesOfLetter = (letter: string, arr: string[]) => {
     const indices = [];
     let idx = arr.indexOf(letter);
     while (idx != -1) {
@@ -51,7 +99,7 @@ export const Game = () => {
       idx = arr.indexOf(letter, idx + 1);
     }
     return indices;
-  }
+  };
 
   const getTileColor = (letter: string, index: number) => {
     const isCorrectLetter = currentWord?.value
@@ -132,18 +180,29 @@ export const Game = () => {
     }
 
     const interval = 200;
-    guessedWord.split("").forEach((letter, index) => {
-      setTimeout(() => {
-        const color = getTileColor(letter, index);
-        setTileColors((prevColors) => [...prevColors, color]);
-      }, index * interval);
-    });
+    const colors = guessedWord
+      .split("")
+      .map((letter, index) => getTileColor(letter, index));
+
+    let i = 0;
+    const timer = setInterval(() => {
+      const tileColor = colors[i];
+      if (!tileColor) {
+        i = 0;
+        clearInterval(timer);
+        return;
+      }
+
+      setTileColors((prevColors) => [...prevColors, tileColor]);
+      i++;
+    }, interval);
+
+    storeGameState([...tileColors, ...colors]);
 
     if (guessedWord.toUpperCase() === currentWord?.value?.toUpperCase()) {
       setTimeout(() => {
         const okSelected = window.confirm("Well done!");
         if (okSelected) {
-          clearBoard();
           // showResult();
         }
         return;

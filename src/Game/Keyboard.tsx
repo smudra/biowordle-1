@@ -1,4 +1,4 @@
-import { ReactNode, MouseEvent, useEffect } from "react";
+import { ReactNode, MouseEvent, useEffect, useCallback } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import type { ButtonProps } from "@chakra-ui/react";
 
@@ -69,44 +69,46 @@ export const Keyboard = (props: KeyboardProps) => {
     }
   };
 
-  const handleKeyPress = ({ key }: KeyboardEvent) => {
-    if (key === "Backspace") {
-      onDelete?.();
-    } else if (key === "Enter") {
-      onEnter();
-    } else {
-      const match = /^[a-zA-Z]+$/.test(key);
-      if (match && key.length === 1) {
-        console.log("first", key);
-        onLetterSelect(key);
+  const handleKeyPress = useCallback(
+    ({ key }: KeyboardEvent) => {
+      if (key === "Backspace") {
+        onDelete?.();
+      } else if (key === "Enter") {
+        onEnter();
+      } else {
+        const match = /^[a-zA-Z]+$/.test(key);
+        if (match && key.length === 1) {
+          onLetterSelect(key);
+        }
       }
-    }
-  };
+    },
+    [onDelete, onEnter, onLetterSelect]
+  );
 
   useEffect(() => {
     window.addEventListener("keyup", handleKeyPress);
 
     return () => window.removeEventListener("keyup", handleKeyPress);
-  }, [onDelete]);
+  }, [handleKeyPress, onDelete]);
 
   return (
     <Box height="200px" width="100%">
       <KeyboardRow>
         {KEYS[0].map((key) => (
-          <Key {...{ key }} value={key} onClick={handleClick} />
+          <Key key={key} value={key} onClick={handleClick} />
         ))}
       </KeyboardRow>
       <KeyboardRow>
         <Box flexGrow={0.5} />
         {KEYS[1].map((key) => (
-          <Key {...{ key }} value={key} onClick={handleClick} />
+          <Key key={key} value={key} onClick={handleClick} />
         ))}
         <Box flexGrow={0.5} />
       </KeyboardRow>
       <KeyboardRow>
         <Key value={ENTER} flex={1.5} onClick={handleClick} />
         {KEYS[2].map((key) => (
-          <Key {...{ key }} value={key} onClick={handleClick} />
+          <Key key={key} value={key} onClick={handleClick} />
         ))}
         <Key value={DELETE} flex={1.5} onClick={handleClick} />
       </KeyboardRow>

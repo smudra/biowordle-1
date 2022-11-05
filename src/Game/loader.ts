@@ -2,7 +2,7 @@ import { query, collection, getDocs } from "firebase/firestore";
 
 import type { LoaderFunction } from "react-router-dom";
 
-import { db } from "../../config/firebase.js";
+import { db } from "../../config/firebase";
 
 type Word = { value: string; date: string };
 

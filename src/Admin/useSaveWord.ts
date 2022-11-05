@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore";
 import { useBoolean } from "@chakra-ui/react";
 
-import { db } from "../../config/firebase.js";
+import { db } from "../../config/firebase";
 
 export const useSaveWord = () => {
   const [isSaving, setSaving] = useBoolean();

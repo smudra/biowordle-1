@@ -22,7 +22,7 @@ export const GameBoard = ({
     setTimeout(() => {
       setVisibility.on();
     }, 500);
-  }, []);
+  }, [setVisibility]);
 
   return (
     <Flex
