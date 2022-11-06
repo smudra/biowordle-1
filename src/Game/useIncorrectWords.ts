@@ -11,6 +11,9 @@ type UseIncorrectWords = () => {
 export const useIncorrectWords: UseIncorrectWords = () => {
   const logIncorrectWord = useCallback(
     async (guessedWord: string, currentWord: string) => {
+      console.error("incorrect word", guessedWord);
+      return;
+
       await addDoc(collection(db, "guessedWords"), {
         currentWord,
         guessedWord,

@@ -46,6 +46,7 @@ export const Game = () => {
 
     const gameState = JSON.parse(gameStateString);
     if (gameState?.currentWordValue !== currentWord.value) {
+      window.localStorage.removeItem("gameState");
       return;
     }
 
@@ -125,23 +126,22 @@ export const Game = () => {
     }
 
     const existsMoreThanOnce =
-      guessedWord.split("").filter((l) => l === letter).length > 1;
-
-    // is guessed more than once and exists more than once
-    if (existsMoreThanOnce) {
-      return TileColors.yellow;
-    }
+      currentWord.value.split("").filter((l) => l === letter).length > 1;
 
     const hasBeenGuessedAlready = guessedWord.split("").indexOf(letter) < index;
 
-    const indices = getIndicesOfLetter(letter, guessedWord.split(""));
+    const indices = getIndicesOfLetter(letter, currentWord.value.split(""));
     const otherIndices = indices.filter((i) => i !== index);
     const isGuessedCorrectlyLater = otherIndices.some(
       (i) => i > index && guessedWord.split("")[i] === letter
     );
 
-    if (!hasBeenGuessedAlready && !isGuessedCorrectlyLater) {
-      return TileColors.green;
+    if (isGuessedCorrectlyLater && !existsMoreThanOnce) {
+      return TileColors.dark;
+    }
+
+    if (hasBeenGuessedAlready && !existsMoreThanOnce) {
+      return TileColors.dark;
     }
 
     return TileColors.yellow;
@@ -173,6 +173,7 @@ export const Game = () => {
       const isWordFromDisctionary = await checkIsWordFromDictionary(
         guessedWord
       );
+
       if (!isWordFromDisctionary) {
         logIncorrectWord(guessedWord, currentWord?.value);
         return;
