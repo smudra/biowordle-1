@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import {
+  Box,
   Flex,
   Icon,
   Heading,
@@ -12,14 +13,20 @@ import {
   useBoolean,
   Text,
 } from "@chakra-ui/react";
-import { MdHelpOutline, MdBarChart } from "react-icons/md";
+import {
+  MdHelpOutline,
+  MdBarChart,
+  MdOutlineAccountCircle,
+} from "react-icons/md";
 import { format } from "date-fns";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import invariant from "tiny-invariant";
 
 import { GameBoard } from "./GameBoard";
 import { Keyboard } from "./Keyboard";
 import { useIncorrectWords } from "./useIncorrectWords";
+import { useAuthUser } from "../hooks/useAuthUser";
+import { useSaveScore } from "../hooks/useSaveScore";
 
 export enum TileColors {
   green = "rgb(83, 141, 78)",
@@ -38,6 +45,11 @@ export const Game = () => {
   const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
   const [tileColors, setTileColors] = useState<TileColors[]>([]);
   const [score, setScore] = useState<number | null>(null);
+
+  const navigate = useNavigate();
+
+  const { user } = useAuthUser();
+  const { saveScore } = useSaveScore();
 
   const [isShowingResult, setShowingResult] = useBoolean();
   const [isShowingLosingModal, setShowLosingModal] = useBoolean();
@@ -102,18 +114,14 @@ export const Game = () => {
     setGuessedLetters((prevArr) => prevArr.slice(0, -1));
   }, []);
 
-  // const clearBoard = () => {
-  //   setGuessedWord("");
-  //   setGuessedLetters([]);
-  //   setTileColors([]);
-  // };
-
   const calculateScore = () => {
     const numberOfCharacters = currentWord.value.length;
     const numberOfGuesses = guessedLetters.length / numberOfCharacters;
     const triesRemaining = 6 - numberOfGuesses;
 
-    setScore(numberOfCharacters * (triesRemaining + 1));
+    const newScore = numberOfCharacters * (triesRemaining + 1);
+    setScore(newScore);
+    saveScore(newScore);
   };
 
   const showResult = () => {
@@ -281,7 +289,15 @@ export const Game = () => {
             <Heading as="h1" color="#fff" margin="0">
               Bio Wordle
             </Heading>
-            <Icon as={MdBarChart} color="#fff" boxSize="24px" />
+            <Box>
+              <Icon
+                as={MdOutlineAccountCircle}
+                color={user ? "#fff" : "red.300"}
+                boxSize="24px"
+                onClick={() => navigate("/profile")}
+              />
+              <Icon as={MdBarChart} color="#fff" boxSize="24px" />
+            </Box>
           </Flex>
           <GameBoard
             wordLength={currentWord?.value?.length || 5}

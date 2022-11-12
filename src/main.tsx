@@ -3,21 +3,27 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 
-import { Game, loader as gameLoader } from "./Game";
+import { App } from "./App";
+import { loader as gameLoader } from "./Game";
 import { Admin } from "./Admin";
+import { Profile } from "./Profile";
 import { ErrorBoundary } from "./ErrorBoundary";
 import "./index.css";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Game />,
+    element: <App />,
     errorElement: <ErrorBoundary />,
     loader: gameLoader,
   },
   {
     path: "/admin",
     element: <Admin />,
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
   },
 ]);
 
