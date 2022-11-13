@@ -1,4 +1,4 @@
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, addDoc, collection } from "firebase/firestore";
 import { useBoolean } from "@chakra-ui/react";
 import { format } from "date-fns";
 
@@ -14,13 +14,22 @@ export const useSaveScore = () => {
 
   const getMonthKey = () => format(new Date(), "MMMyy");
 
-  const saveScore = async (score: number) => {
-    if (!user) {
-      return;
-    }
+  const saveResult = async (score: number, word: string) => {
+    if (!user) return;
+
+    await addDoc(collection(db, "results"), {
+      userId: user.uid,
+      score,
+      word,
+    });
+  };
+
+  const saveScore = async (score: number, word: string) => {
+    if (!user) return;
 
     try {
       setSaving.on();
+      saveResult(score, word);
       const monthKey = getMonthKey();
       const { totalScore = 0 } = scores || {};
       const monthlyScore = scores?.[monthKey] || 0;

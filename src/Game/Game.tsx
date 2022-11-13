@@ -121,7 +121,7 @@ export const Game = () => {
 
     const newScore = numberOfCharacters * (triesRemaining + 1);
     setScore(newScore);
-    saveScore(newScore);
+    saveScore(newScore, currentWord.value);
   };
 
   const showResult = () => {

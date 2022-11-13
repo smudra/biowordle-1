@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import Calendar from "react-calendar";
 import {
   Button,
@@ -6,7 +7,9 @@ import {
   Input,
   Text,
   HStack,
+  Stack,
   useToast,
+  Link,
 } from "@chakra-ui/react";
 import { format } from "date-fns";
 import "react-calendar/dist/Calendar.css";
@@ -66,21 +69,26 @@ export const Admin = () => {
 
   return (
     <Center display="flex" flexDirection="column">
-      <div>Admin PAGE</div>
-
-      <Calendar onChange={setDate} value={date} />
-
-      <Text>{format(date, "do LLL")}</Text>
-      <HStack>
-        <Input value={word} onChange={handleChange} />
-        <Button
-          colorScheme="blue"
-          onClick={handleSaveWord}
-          isLoading={isSaving}
-        >
-          Save
-        </Button>
-      </HStack>
+      <Stack spacing="24px">
+        <Text fontWeight="bold" fontSize="4xl" textAlign="center">
+          BioWordle Admin
+        </Text>
+        <Link as={RouterLink} to="/">
+          Game Board
+        </Link>
+        <Calendar onChange={setDate} value={date} />
+        <Text>Word for {format(date, "do LLLL")}:</Text>
+        <HStack>
+          <Input value={word} onChange={handleChange} />
+          <Button
+            colorScheme="blue"
+            onClick={handleSaveWord}
+            isLoading={isSaving}
+          >
+            Save
+          </Button>
+        </HStack>
+      </Stack>
     </Center>
   );
 };
