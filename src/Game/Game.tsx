@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
 import {
-  Box,
   Flex,
   Icon,
   Heading,
@@ -13,6 +12,7 @@ import {
   useBoolean,
   Text,
   Link,
+  HStack,
 } from "@chakra-ui/react";
 import {
   MdHelpOutline,
@@ -54,7 +54,6 @@ export const Game = () => {
   const navigate = useNavigate();
 
   const { user } = useAuthUser();
-  console.log("🚀 ~ file: Game.tsx ~ line 57 ~ Game ~ user", user);
   const { saveScore } = useSaveScore();
 
   const [isShowingResult, setShowingResult] = useBoolean();
@@ -295,16 +294,22 @@ export const Game = () => {
             <Heading as="h1" color="#fff" margin="0">
               Bio Wordle
             </Heading>
-            <Box>
+            <HStack>
               <Icon
                 as={MdOutlineAccountCircle}
                 color={user ? "#fff" : "red.300"}
                 boxSize="24px"
                 onClick={() => navigate("/profile")}
-                __css={{ cursor: "pointer " }}
+                cursor="pointer"
               />
-              <Icon as={MdBarChart} color="#fff" boxSize="24px" />
-            </Box>
+              <Icon
+                as={MdBarChart}
+                color="#fff"
+                boxSize="24px"
+                onClick={() => navigate("/leaderboard")}
+                cursor="pointer"
+              />
+            </HStack>
           </Flex>
           <GameBoard
             wordLength={currentWord?.value?.length || 5}

@@ -3,19 +3,17 @@ import {
   Box,
   Button,
   Flex,
-  Icon,
   Text,
   Input,
   Stack,
-  Link,
   useBoolean,
 } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { sendSignInLinkToEmail, signOut } from "firebase/auth";
-import { MdKeyboardBackspace } from "react-icons/md";
 
 import { useAuthUser } from "../hooks/useAuthUser";
 import { useGetUserScores } from "../hooks/useGetUserScores";
+import { BackButton } from "../BackButton";
 import { auth } from "../../config/firebase";
 
 const actionCodeSettings = {
@@ -83,18 +81,7 @@ export const Profile = () => {
         <Text color="white" fontWeight="bold" fontSize="4xl" textAlign="center">
           Bio-Wordle Profile Page
         </Text>
-        <Box
-          alignItems="center"
-          display="flex"
-          justifyContent="center"
-          w="100%"
-          marginBottom="88px"
-        >
-          <Icon as={MdKeyboardBackspace} boxSize="18px" color="white" />
-          <Link as={RouterLink} color="white" fontWeight="bold" to="/">
-            Game
-          </Link>
-        </Box>
+        <BackButton />
 
         {user && (
           <Stack alignItems="center">

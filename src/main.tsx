@@ -7,6 +7,7 @@ import { App } from "./App";
 import { loader as gameLoader } from "./Game";
 import { Admin } from "./Admin";
 import { Profile } from "./Profile";
+import { Leaderboard } from "./Leaderboard";
 import { ErrorBoundary } from "./ErrorBoundary";
 import "./index.css";
 
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: "/profile",
     element: <Profile />,
+  },
+  {
+    path: "/leaderboard",
+    element: <Leaderboard />,
   },
 ]);
 

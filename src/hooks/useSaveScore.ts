@@ -6,13 +6,13 @@ import { useAuthUser } from "./useAuthUser";
 import { useGetUserScores } from "./useGetUserScores";
 import { db } from "../../config/firebase";
 
+const getMonthKey = () => format(new Date(), "MMMyy");
+
 export const useSaveScore = () => {
   const [isSaving, setSaving] = useBoolean();
 
   const { user } = useAuthUser();
   const { scores } = useGetUserScores();
-
-  const getMonthKey = () => format(new Date(), "MMMyy");
 
   const saveResult = async (score: number, word: string) => {
     if (!user) return;
