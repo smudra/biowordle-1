@@ -12,6 +12,7 @@ import {
   ModalCloseButton,
   useBoolean,
   Text,
+  Link,
 } from "@chakra-ui/react";
 import {
   MdHelpOutline,
@@ -19,7 +20,11 @@ import {
   MdOutlineAccountCircle,
 } from "react-icons/md";
 import { format } from "date-fns";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import {
+  Link as RouterLink,
+  useLoaderData,
+  useNavigate,
+} from "react-router-dom";
 import invariant from "tiny-invariant";
 
 import { GameBoard } from "./GameBoard";
@@ -49,6 +54,7 @@ export const Game = () => {
   const navigate = useNavigate();
 
   const { user } = useAuthUser();
+  console.log("🚀 ~ file: Game.tsx ~ line 57 ~ Game ~ user", user);
   const { saveScore } = useSaveScore();
 
   const [isShowingResult, setShowingResult] = useBoolean();
@@ -295,6 +301,7 @@ export const Game = () => {
                 color={user ? "#fff" : "red.300"}
                 boxSize="24px"
                 onClick={() => navigate("/profile")}
+                __css={{ cursor: "pointer " }}
               />
               <Icon as={MdBarChart} color="#fff" boxSize="24px" />
             </Box>
@@ -324,7 +331,20 @@ export const Game = () => {
               </Text>
               , earning yourself {score} points!
             </Text>
-            <Text>Check back tomorrow to play the next word.</Text>
+            <Text marginBottom="24px">
+              Check back tomorrow to play the next word.
+            </Text>
+
+            {!user && (
+              <Text>
+                If you want to keep track of your scores and compete with other
+                BioWordle users, why not create an account?{" "}
+                <Link as={RouterLink} to="/profile">
+                  Click here
+                </Link>{" "}
+                to set it up.
+              </Text>
+            )}
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -343,7 +363,20 @@ export const Game = () => {
               </Text>
               .
             </Text>
-            <Text>Check back tomorrow to play the next word.</Text>
+            <Text marginBottom="24px">
+              Check back tomorrow to play the next word.
+            </Text>
+
+            {!user && (
+              <Text>
+                If you want to keep track of your scores and compete with other
+                BioWordle users, why not create an account?{" "}
+                <Link as={RouterLink} to="/profile">
+                  Click here
+                </Link>{" "}
+                to set it up.
+              </Text>
+            )}
           </ModalBody>
         </ModalContent>
       </Modal>

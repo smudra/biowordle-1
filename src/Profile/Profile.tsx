@@ -15,6 +15,7 @@ import { sendSignInLinkToEmail, signOut } from "firebase/auth";
 import { MdKeyboardBackspace } from "react-icons/md";
 
 import { useAuthUser } from "../hooks/useAuthUser";
+import { useGetUserScores } from "../hooks/useGetUserScores";
 import { auth } from "../../config/firebase";
 
 const actionCodeSettings = {
@@ -25,6 +26,10 @@ const actionCodeSettings = {
   handleCodeInApp: true,
 };
 
+const getMonthFrom = (key: string) => {
+  return `${key.slice(0, 3)} '${key.slice(3, 5)}`;
+};
+
 export const Profile = () => {
   const [email, setEmail] = useState("");
   const [isEmailSent, setEmailSent] = useState(false);
@@ -32,7 +37,9 @@ export const Profile = () => {
   const [processing, setProcessing] = useBoolean();
 
   const { loading, user } = useAuthUser();
+  const { scores } = useGetUserScores();
 
+  const { totalScore, ...restScores } = scores || {};
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
@@ -94,6 +101,14 @@ export const Profile = () => {
             <Text color="gray.100" textAlign="center">
               You are signed in as {user.email}
             </Text>
+            <Text color="gray.100">Total score: {totalScore}</Text>
+            <Text color="gray.100">Monthly scoress:</Text>
+            {Object.keys(restScores || {}).map((key) => (
+              <Text color="gray.100" key={key}>
+                {/* @ts-ignore */}
+                {getMonthFrom(key)}: {restScores[key]}
+              </Text>
+            ))}
             <Button colorScheme="red" onClick={handleSignOut} width="200px">
               Sign out
             </Button>

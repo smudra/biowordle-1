@@ -1,5 +1,5 @@
 import { ReactNode, MouseEvent, useEffect, useCallback } from "react";
-import { Box, Button } from "@chakra-ui/react";
+import { Box, Center } from "@chakra-ui/react";
 import type { ButtonProps } from "@chakra-ui/react";
 
 const KEYS = [
@@ -14,11 +14,11 @@ const ENTER = "ENTER";
 type KeyProps = {
   value: string;
   flex?: ButtonProps["flex"];
-  onClick(event: MouseEvent<HTMLButtonElement>): void;
+  onClick(value: string): void;
 };
 
 const Key = ({ value, flex = "1", onClick }: KeyProps) => (
-  <Button
+  <Center
     backgroundColor="rgb(129, 131, 132)"
     border="0"
     borderRadius="4px"
@@ -27,13 +27,16 @@ const Key = ({ value, flex = "1", onClick }: KeyProps) => (
     fontFamily="inherit"
     fontWeight="bold"
     height="58px"
+    minWidth={["20px", "40px"]}
     marginRight="6px"
     textTransform="uppercase"
     userSelect="none"
-    {...{ flex, onClick, value }}
+    fontSize={["12px", "16px"]}
+    onClick={() => onClick(value)}
+    {...{ flex, value }}
   >
     {value}
-  </Button>
+  </Center>
 );
 
 const KeyboardRow = ({ children }: { children: ReactNode }) => (
@@ -57,9 +60,7 @@ type KeyboardProps = {
 export const Keyboard = (props: KeyboardProps) => {
   const { onDelete, onEnter, onLetterSelect } = props;
 
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    const { value } = event.target as HTMLButtonElement;
-
+  const handleClick = (value: string) => {
     if (value === DELETE) {
       onDelete?.();
     } else if (value === ENTER) {
