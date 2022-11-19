@@ -292,7 +292,7 @@ export const Game = () => {
           >
             <Icon as={MdHelpOutline} color="#fff" boxSize="24px" />
             <Heading as="h1" color="#fff" margin="0">
-              Bio Wordle
+              BioWordle
             </Heading>
             <HStack>
               <Icon

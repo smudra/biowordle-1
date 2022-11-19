@@ -79,7 +79,7 @@ export const Profile = () => {
     >
       <Flex flexDirection="column" width="80%" maxWidth="600px">
         <Text color="white" fontWeight="bold" fontSize="4xl" textAlign="center">
-          Bio-Wordle Profile Page
+          BioWordle Profile Page
         </Text>
         <BackButton />
 
@@ -136,7 +136,8 @@ export const Profile = () => {
 
         {!user && isEmailSent && (
           <Text color="gray.300" fontSize="18px" textAlign="center">
-            Please check your email for instructions on how to sign in!
+            Please check your email for instructions on how to sign in! Check
+            your spam folder just in case.
           </Text>
         )}
       </Flex>
