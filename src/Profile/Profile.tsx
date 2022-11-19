@@ -16,10 +16,12 @@ import { useGetUserScores } from "../hooks/useGetUserScores";
 import { BackButton } from "../BackButton";
 import { auth } from "../../config/firebase";
 
+const isProd = import.meta.env.PROD;
+
 const actionCodeSettings = {
   // URL you want to redirect back to. The domain (www.example.com) for this
   // URL must be in the authorized domains list in the Firebase Console.
-  url: "https://localhost:5173",
+  url: isProd ? "https://biowordle.web.app" : "http://localhost:5173",
   // This must be true.
   handleCodeInApp: true,
 };
