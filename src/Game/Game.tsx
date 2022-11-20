@@ -30,6 +30,7 @@ import invariant from "tiny-invariant";
 import { GameBoard } from "./GameBoard";
 import { Keyboard } from "./Keyboard";
 import { useIncorrectWords } from "./useIncorrectWords";
+import { useUserPlayed } from "./useUserPlayed";
 import { useAuthUser } from "../hooks/useAuthUser";
 import { useSaveScore } from "../hooks/useSaveScore";
 
@@ -70,6 +71,8 @@ export const Game = () => {
     currentWord,
     "There is no word set for today. Please contact game admin!"
   );
+
+  const hasUserPlayedToday = useUserPlayed(currentWord.value);
 
   const loadGameState = useCallback(() => {
     const gameStateString = window.localStorage.getItem("gameState");
@@ -257,7 +260,7 @@ export const Game = () => {
   };
 
   const handleLetterSelect = (letter: string) => {
-    if (!currentWord?.value) {
+    if (!currentWord?.value || hasUserPlayedToday) {
       return;
     }
 
@@ -311,6 +314,9 @@ export const Game = () => {
               />
             </HStack>
           </Flex>
+          {hasUserPlayedToday && (
+            <Text color="red.300">You have already played today!</Text>
+          )}
           <GameBoard
             wordLength={currentWord?.value?.length || 5}
             {...{ guessedLetters, tileColors }}

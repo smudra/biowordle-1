@@ -20,8 +20,7 @@ export const App = () => {
       }
 
       signInWithEmailLink(auth, email, window.location.href)
-        .then((result) => {
-          console.log("🚀 ~ result", result);
+        .then(() => {
           window.localStorage.removeItem("emailForSignIn");
         })
         .catch((error) => {
