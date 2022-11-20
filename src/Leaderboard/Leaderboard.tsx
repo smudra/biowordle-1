@@ -1,4 +1,15 @@
-import { Text, Flex, Stack } from "@chakra-ui/react";
+import {
+  Text,
+  Flex,
+  Stack,
+  Thead,
+  Th,
+  TableContainer,
+  Table,
+  Tbody,
+  Tr,
+  Td,
+} from "@chakra-ui/react";
 
 import { useLeaderboard } from "./useLeaderboard";
 import { BackButton } from "../BackButton";
@@ -33,13 +44,30 @@ export const Leaderboard = () => {
             fontSize="3xl"
             textAlign="center"
           >
-            All Time Leaders
+            All Time Top 10
           </Text>
-          {allTime?.map((score) => (
-            <Text color="gray.100" key={score.userId} textAlign="center">
-              {score.userId}: {score.value}
-            </Text>
-          ))}
+          <TableContainer width={["100%", "600px"]}>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th color="gray.300">User</Th>
+                  <Th color="gray.300" isNumeric>
+                    Score
+                  </Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {allTime?.map((score) => (
+                  <Tr key={score.userId}>
+                    <Td color="gray.100">{score.email || score.name}</Td>
+                    <Td color="gray.100" isNumeric>
+                      {score.value}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
         </div>
 
         <div>
@@ -49,13 +77,30 @@ export const Leaderboard = () => {
             fontSize="3xl"
             textAlign="center"
           >
-            {month} Leaders
+            {month} Top 10
           </Text>
-          {monthly?.map((score) => (
-            <Text color="gray.100" key={score.userId} textAlign="center">
-              {score.userId}: {score.value}
-            </Text>
-          ))}
+          <TableContainer width={["100%", "600px"]}>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th color="gray.300">User</Th>
+                  <Th color="gray.300" isNumeric>
+                    Score
+                  </Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {monthly?.map((score) => (
+                  <Tr key={score.userId}>
+                    <Td color="gray.100">{score.email || score.name}</Td>
+                    <Td color="gray.100" isNumeric>
+                      {score.value}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
         </div>
       </Stack>
     </Flex>

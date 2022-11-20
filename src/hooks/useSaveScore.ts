@@ -27,12 +27,15 @@ export const useSaveScore = () => {
   const saveScore = async (score: number, word: string) => {
     if (!user) return;
 
+    const { email, displayName = "" } = user;
+
     try {
       setSaving.on();
       saveResult(score, word);
       const monthKey = getMonthKey();
       const { totalScore = 0 } = scores || {};
-      const monthlyScore = scores?.[monthKey] || 0;
+      // @ts-ignore (see Scores type in  `useGetUserScores`)
+      const monthlyScore = scores?.[monthKey] ?? 0;
 
       const newTotal = totalScore + score;
       const newMonthtly = monthlyScore + score;
@@ -40,6 +43,8 @@ export const useSaveScore = () => {
       await setDoc(doc(db, "scores", user.uid), {
         [monthKey]: newMonthtly,
         totalScore: newTotal,
+        email,
+        name: displayName,
       });
     } catch (e) {
       if (e instanceof Error) {

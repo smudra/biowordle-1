@@ -267,8 +267,6 @@ export const Game = () => {
     }
   };
 
-  console.log("??", import.meta.env);
-
   return (
     <>
       <Flex

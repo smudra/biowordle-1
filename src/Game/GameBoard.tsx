@@ -51,11 +51,11 @@ export const GameBoard = ({
               })}
               color="gainsboro"
               cursor="pointer"
-              fontSize={["16px", "32px"]}
+              fontSize={["24px", "32px", "32px"]}
               fontWeight="bold"
               key={i.toString()}
-              minHeight={["40px", "50px", "60px"]}
-              minWidth={["40px", "50px", "60px"]}
+              minHeight={["50px", "60px", "60px"]}
+              minWidth={["50px", "60px", "60px"]}
               textTransform="uppercase"
               userSelect="none"
               bgColor={tileColors[i]}

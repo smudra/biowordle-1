@@ -39,7 +39,7 @@ export const Profile = () => {
   const { loading, user } = useAuthUser();
   const { scores } = useGetUserScores();
 
-  const { totalScore, ...restScores } = scores || {};
+  const { totalScore, name, email: _email, ...restScores } = scores || {};
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
@@ -88,10 +88,10 @@ export const Profile = () => {
         {user && (
           <Stack alignItems="center">
             <Text color="gray.100" textAlign="center">
-              You are signed in as {user.email}
+              {name ? `Hello ${name}. ` : null}You are signed in as {user.email}
             </Text>
             <Text color="gray.100">Total score: {totalScore}</Text>
-            <Text color="gray.100">Monthly scoress:</Text>
+            <Text color="gray.100">Monthly scores:</Text>
             {Object.keys(restScores || {}).map((key) => (
               <Text color="gray.100" key={key}>
                 {/* @ts-ignore */}

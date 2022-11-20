@@ -6,8 +6,10 @@ import { useAuthUser } from "./useAuthUser";
 import { db } from "../../config/firebase";
 
 type Scores = {
-  [key: string]: number;
   totalScore: number;
+  email: string;
+  name?: string;
+  // [key: string]: number; // this breaks the above. See https://stackoverflow.com/questions/49969390/how-do-i-type-an-object-with-known-and-unknown-keys-in-typescript to implement a proper fix.
 };
 
 type UseGetUserScores = () => {

@@ -7,7 +7,8 @@ import { db } from "../../config/firebase";
 
 type Score = {
   userId: string;
-  username?: string; // TODO
+  email: string;
+  name?: string;
   value: number;
 };
 
@@ -38,8 +39,8 @@ export const useLeaderboard: UseLeaderboard = () => {
     setAllTime(
       snapshot?.docs?.map((doc) => {
         const data = doc.data();
-        const value = data.totalScore;
-        return { userId: doc.id, value };
+        const { totalScore, ...rest } = data;
+        return { userId: doc.id, value: totalScore, ...rest };
       }) as Score[]
     );
   }, []);
@@ -55,7 +56,8 @@ export const useLeaderboard: UseLeaderboard = () => {
       snapshot?.docs?.map((doc) => {
         const data = doc.data();
         const value = data[monthKey];
-        return { userId: doc.id, value };
+        const { email, name } = data;
+        return { userId: doc.id, value, email, name };
       }) as Score[]
     );
   }, [monthKey]);
