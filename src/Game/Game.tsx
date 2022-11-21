@@ -25,7 +25,6 @@ import {
   useLoaderData,
   useNavigate,
 } from "react-router-dom";
-import invariant from "tiny-invariant";
 
 import { GameBoard } from "./GameBoard";
 import { Keyboard } from "./Keyboard";
@@ -47,6 +46,9 @@ type LoaderData = {
 const FORMAT_STRING = "y-L-d";
 
 export const Game = () => {
+  const data = useLoaderData();
+
+  console.log(data);
   const [guessedWord, setGuessedWord] = useState("");
   const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
   const [tileColors, setTileColors] = useState<TileColors[]>([]);
@@ -67,10 +69,11 @@ export const Game = () => {
     ({ date }) => date === format(new Date(), FORMAT_STRING)
   );
 
-  invariant(
-    currentWord,
-    "There is no word set for today. Please contact game admin!"
-  );
+  if (!currentWord) {
+    throw new Error(
+      "There is no word set for today. Please contact game admin!"
+    );
+  }
 
   const hasUserPlayedToday = useUserPlayed(currentWord.value);
 

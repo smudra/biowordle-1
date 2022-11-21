@@ -1,10 +1,12 @@
-import { useRouteError } from "react-router-dom";
+import { useRouteError, Link as RouterLink } from "react-router-dom";
 import {
   Center,
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Text,
+  Link,
 } from "@chakra-ui/react";
 
 export const ErrorBoundary = () => {
@@ -16,7 +18,7 @@ export const ErrorBoundary = () => {
   }
 
   return (
-    <Center>
+    <Center display="flex" flexDirection="column">
       <Alert
         status="error"
         variant="subtle"
@@ -32,6 +34,13 @@ export const ErrorBoundary = () => {
         </AlertTitle>
         <AlertDescription maxWidth="sm">{errorMessage}</AlertDescription>
       </Alert>
+      <Text marginY="36px">
+        Are you an admin?{" "}
+        <Link as={RouterLink} to="profile">
+          Click here to login
+        </Link>
+        .
+      </Text>
     </Center>
   );
 };
