@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth";
-
-import { Game } from "./Game";
+import { Outlet } from "react-router-dom";
 
 import { auth } from "../config/firebase";
 
@@ -29,7 +28,7 @@ export const App = () => {
     }
   }, []);
 
-  return <Game />;
+  return <Outlet />;
 };
 
 export default App;

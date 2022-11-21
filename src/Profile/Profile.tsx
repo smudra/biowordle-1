@@ -21,7 +21,9 @@ const isProd = import.meta.env.PROD;
 const actionCodeSettings = {
   // URL you want to redirect back to. The domain (www.example.com) for this
   // URL must be in the authorized domains list in the Firebase Console.
-  url: isProd ? "https://biowordle.web.app" : "http://localhost:5173",
+  url: isProd
+    ? "https://biowordle.web.app/profile"
+    : "http://localhost:5173/profile",
   // This must be true.
   handleCodeInApp: true,
 };
@@ -119,6 +121,7 @@ export const Profile = () => {
                 <Box flex={1}>
                   <Text color="gray.300">Email address</Text>
                   <Input
+                    color="gray.300"
                     name="email"
                     value={email}
                     onChange={handleEmailChange}

@@ -1,36 +1,31 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  createRoutesFromElements,
+  Route,
+} from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 
 import { App } from "./App";
-import { loader as gameLoader } from "./Game";
+import { Game, loader as gameLoader } from "./Game";
 import { Admin } from "./Admin";
 import { Profile } from "./Profile";
 import { Leaderboard } from "./Leaderboard";
 import { ErrorBoundary } from "./ErrorBoundary";
 import "./index.css";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <ErrorBoundary />,
-    loader: gameLoader,
-  },
-  {
-    path: "/admin",
-    element: <Admin />,
-  },
-  {
-    path: "/profile",
-    element: <Profile />,
-  },
-  {
-    path: "/leaderboard",
-    element: <Leaderboard />,
-  },
-]);
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<App />} errorElement={<ErrorBoundary />}>
+      <Route element={<Game />} index loader={gameLoader} />
+      <Route path="/admin" element={<Admin />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/leaderboard" element={<Leaderboard />} />
+    </Route>
+  )
+);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
