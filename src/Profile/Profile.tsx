@@ -14,6 +14,7 @@ import { sendSignInLinkToEmail, signOut } from "firebase/auth";
 import { useAuthUser } from "../hooks/useAuthUser";
 import { useGetUserScores } from "../hooks/useGetUserScores";
 import { BackButton } from "../BackButton";
+import { StatBox } from "./StatBox";
 import { auth } from "../../config/firebase";
 
 const isProd = import.meta.env.PROD;
@@ -41,7 +42,7 @@ export const Profile = () => {
   const { loading, user } = useAuthUser();
   const { scores } = useGetUserScores();
 
-  const { totalScore, name, email: _email, ...restScores } = scores || {};
+  const { totalScore = 0, name, email: _email, ...restScores } = scores || {};
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
@@ -92,14 +93,17 @@ export const Profile = () => {
             <Text color="gray.100" textAlign="center">
               {name ? `Hello ${name}. ` : null}You are signed in as {user.email}
             </Text>
-            <Text color="gray.100">Total score: {totalScore}</Text>
-            <Text color="gray.100">Monthly scores:</Text>
-            {Object.keys(restScores || {}).map((key) => (
-              <Text color="gray.100" key={key}>
-                {/* @ts-ignore */}
-                {getMonthFrom(key)}: {restScores[key]}
-              </Text>
-            ))}
+            <Stack spacing="24px">
+              <StatBox label="Total score" stat={totalScore} />
+              {Object.keys(restScores || {}).map((key) => (
+                <StatBox
+                  key={key}
+                  label={getMonthFrom(key)}
+                  // @ts-ignore
+                  stat={restScores[key]}
+                />
+              ))}
+            </Stack>
             <Button colorScheme="red" onClick={handleSignOut} width="200px">
               Sign out
             </Button>

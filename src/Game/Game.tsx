@@ -61,7 +61,7 @@ export const Game = () => {
   const { user } = useAuthUser();
   const { saveScore } = useSaveScore();
 
-  const [isShowingResult, setShowingResult] = useBoolean(true);
+  const [isShowingResult, setShowingResult] = useBoolean();
   const [isShowingLosingModal, setShowLosingModal] = useBoolean();
 
   const { words } = useLoaderData() as LoaderData;
