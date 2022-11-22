@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import {
+  Button,
   Flex,
   Icon,
   Heading,
@@ -19,6 +20,7 @@ import {
   MdBarChart,
   MdOutlineAccountCircle,
 } from "react-icons/md";
+import { BsTwitter } from "react-icons/bs";
 import { format } from "date-fns";
 import {
   Link as RouterLink,
@@ -59,7 +61,7 @@ export const Game = () => {
   const { user } = useAuthUser();
   const { saveScore } = useSaveScore();
 
-  const [isShowingResult, setShowingResult] = useBoolean();
+  const [isShowingResult, setShowingResult] = useBoolean(true);
   const [isShowingLosingModal, setShowLosingModal] = useBoolean();
 
   const { words } = useLoaderData() as LoaderData;
@@ -359,6 +361,18 @@ export const Game = () => {
                 to set it up.
               </Text>
             )}
+
+            <Button
+              as={Link}
+              bgColor="blue.300"
+              color="#fff"
+              _hover={{ bgColor: "blue.400" }}
+              rightIcon={<BsTwitter />}
+              href={`https://twitter.com/intent/tweet?text=I%20scored%20${score}%20points%20in%20today's%20BioWordle.`}
+              target="_blank"
+            >
+              Share to Twitter
+            </Button>
           </ModalBody>
         </ModalContent>
       </Modal>

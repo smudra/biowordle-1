@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Calendar from "react-calendar";
 import {
   Button,
+  Flex,
   Center,
   Input,
   Text,
@@ -9,23 +10,28 @@ import {
   Stack,
   useToast,
 } from "@chakra-ui/react";
-import { format } from "date-fns";
+import { format, isPast, isToday } from "date-fns";
 import "react-calendar/dist/Calendar.css";
 
 import { BackButton } from "../BackButton";
 import { useGetWords } from "../hooks/useGetWords";
 import { useSaveWord } from "./useSaveWord";
+import { useGetAverageScore } from "./useGetAverageScore";
+import { useIncorrectlyGuessedWords } from "./useIncorrectlyGuessedWords";
 
 const FORMAT_STRING = "y-L-d";
 
 export const Admin = () => {
   const [date, setDate] = useState(new Date());
   const [word, setWord] = useState("");
+  const [averageScore, setAverageScore] = useState(0);
 
   const toast = useToast();
 
   const { words, refetch } = useGetWords();
   const { saveWord, isSaving } = useSaveWord();
+  const { getAverageOfWord } = useGetAverageScore();
+  const { incorrectlyGuessedWords } = useIncorrectlyGuessedWords();
 
   useEffect(() => {
     if (!words?.length) {
@@ -37,6 +43,21 @@ export const Admin = () => {
     setWord(selectedWord?.value || "");
   }, [date, words]);
 
+  const setAverage = useCallback(async () => {
+    const average = await getAverageOfWord(word);
+    setAverageScore(average);
+  }, [getAverageOfWord, word]);
+
+  useEffect(() => {
+    if (!isPast(date) || !word) {
+      return;
+    }
+
+    console.log("calling/");
+
+    setAverage();
+  }, [date, word, setAverage]);
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setWord(event.target.value);
   };
@@ -44,9 +65,9 @@ export const Admin = () => {
   const handleSaveWord = async () => {
     try {
       const dateString = format(date, FORMAT_STRING);
-      // if (isPast(date) || isToday(date)) {
-      //   throw new Error("Can only change words for future dates");
-      // }
+      if (isPast(date) || isToday(date)) {
+        throw new Error("Can only change words for future dates");
+      }
       await saveWord(word, dateString);
       refetch();
 
@@ -85,6 +106,17 @@ export const Admin = () => {
             Save
           </Button>
         </HStack>
+        {averageScore && <Text>Average Score: {averageScore}</Text>}
+        <Stack>
+          <Text fontWeight="bold">Incorrectly guessed words: </Text>
+          <Flex wrap="wrap" gap="6px">
+            {incorrectlyGuessedWords.map((item) => (
+              <Text as="span" key={item.id}>
+                {item.guessedWord}
+              </Text>
+            ))}
+          </Flex>
+        </Stack>
       </Stack>
     </Center>
   );
