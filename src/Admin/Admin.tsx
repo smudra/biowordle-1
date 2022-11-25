@@ -107,7 +107,7 @@ export const Admin = () => {
           </Button>
         </HStack>
         {averageScore && <Text>Average Score: {averageScore}</Text>}
-        <Stack>
+        <Stack width="350px">
           <Text fontWeight="bold">Incorrectly guessed words: </Text>
           <Flex wrap="wrap" gap="6px">
             {incorrectlyGuessedWords.map((item) => (
