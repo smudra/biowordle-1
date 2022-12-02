@@ -7,17 +7,35 @@ import {
   Input,
   Stack,
   useBoolean,
+  Divider,
+  FormControl,
+  FormLabel,
+  HStack,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
-import { sendSignInLinkToEmail, signOut } from "firebase/auth";
+import { useNavigate, useNavigation, Form } from "react-router-dom";
+import type { ActionFunctionArgs } from "react-router-dom";
+import { sendSignInLinkToEmail, signOut, updateProfile } from "firebase/auth";
+import { doc, updateDoc } from "firebase/firestore";
 
 import { useAuthUser } from "../hooks/useAuthUser";
 import { useGetUserScores } from "../hooks/useGetUserScores";
 import { BackButton } from "../BackButton";
 import { StatBox } from "./StatBox";
-import { auth } from "../../config/firebase";
+import { auth, db } from "../../config/firebase";
 
 const isProd = import.meta.env.PROD;
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const name = formData.get("name") as string;
+
+  if (!auth.currentUser || !name) {
+    return;
+  }
+
+  await updateProfile(auth.currentUser, { displayName: name });
+  await updateDoc(doc(db, "scores", auth.currentUser.uid), { name });
+};
 
 const actionCodeSettings = {
   // URL you want to redirect back to. The domain (www.example.com) for this
@@ -40,10 +58,18 @@ export const Profile = () => {
   const [processing, setProcessing] = useBoolean();
 
   const { loading, user } = useAuthUser();
+  const name = user?.displayName || undefined;
+
   const { scores } = useGetUserScores();
 
-  const { totalScore = 0, name, email: _email, ...restScores } = scores || {};
+  const {
+    totalScore = 0,
+    name: _name,
+    email: _email,
+    ...restScores
+  } = scores || {};
   const navigate = useNavigate();
+  const navigation = useNavigation();
 
   const handleSignIn = async () => {
     if (!email) {
@@ -79,7 +105,7 @@ export const Profile = () => {
     <Flex
       justifyContent="center"
       bgColor="gray.700"
-      height="100%"
+      minHeight="100%"
       padding="24px"
     >
       <Flex flexDirection="column" width="80%" maxWidth="600px">
@@ -89,10 +115,37 @@ export const Profile = () => {
         <BackButton />
 
         {user && (
-          <Stack alignItems="center">
-            <Text color="gray.100" textAlign="center">
-              {name ? `Hello ${name}. ` : null}You are signed in as {user.email}
-            </Text>
+          <Stack spacing="36px">
+            <div>
+              {name ? (
+                <Text color="gray.100" fontSize="36px" fontWeight={500}>
+                  Hello, {name}
+                </Text>
+              ) : null}
+              <Text color="gray.300">You are signed in as {user.email}</Text>
+            </div>
+
+            <Form method="post">
+              <FormControl maxWidth="300px">
+                <FormLabel color="gray.300">Nickname</FormLabel>
+                <HStack>
+                  <Input
+                    defaultValue={user.displayName || undefined}
+                    color="gray.100"
+                    name="name"
+                  ></Input>
+                  <Button
+                    isLoading={navigation.state === "submitting"}
+                    type="submit"
+                  >
+                    Save
+                  </Button>
+                </HStack>
+              </FormControl>
+            </Form>
+
+            <Divider />
+
             <Stack spacing="24px">
               <StatBox label="Total score" stat={totalScore} />
               {Object.keys(restScores || {}).map((key) => (
@@ -104,9 +157,14 @@ export const Profile = () => {
                 />
               ))}
             </Stack>
-            <Button colorScheme="red" onClick={handleSignOut} width="200px">
-              Sign out
-            </Button>
+
+            <Divider />
+
+            <Flex justifyContent="center">
+              <Button colorScheme="red" onClick={handleSignOut} width="200px">
+                Sign out
+              </Button>
+            </Flex>
           </Stack>
         )}
 

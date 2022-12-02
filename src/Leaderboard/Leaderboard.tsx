@@ -9,13 +9,17 @@ import {
   Tbody,
   Tr,
   Td,
+  IconButton,
+  Icon,
+  HStack,
 } from "@chakra-ui/react";
-
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { useLeaderboard } from "./useLeaderboard";
 import { BackButton } from "../BackButton";
 
 export const Leaderboard = () => {
-  const { allTime, monthly, month } = useLeaderboard();
+  const { allTime, monthly, monthName, setPreviousMonth, setNextMonth } =
+    useLeaderboard();
 
   return (
     <Flex
@@ -59,7 +63,7 @@ export const Leaderboard = () => {
               <Tbody>
                 {allTime?.map((score) => (
                   <Tr key={score.userId}>
-                    <Td color="gray.100">{score.email || score.name}</Td>
+                    <Td color="gray.100">{score.name || score.email}</Td>
                     <Td color="gray.100" isNumeric>
                       {score.value}
                     </Td>
@@ -71,14 +75,30 @@ export const Leaderboard = () => {
         </div>
 
         <div>
-          <Text
-            color="white"
-            fontWeight="bold"
-            fontSize="3xl"
-            textAlign="center"
-          >
-            {month} Top 10
-          </Text>
+          <HStack justifyContent="center">
+            <IconButton
+              aria-label="previous month"
+              icon={<Icon as={FaAngleLeft} />}
+              onClick={setPreviousMonth}
+              variant="ghost"
+              color="gray.300"
+            />
+            <Text
+              color="white"
+              fontWeight="bold"
+              fontSize="3xl"
+              textAlign="center"
+            >
+              {monthName} Top 10
+            </Text>
+            <IconButton
+              aria-label="next month"
+              icon={<Icon as={FaAngleRight} />}
+              onClick={setNextMonth}
+              variant="ghost"
+              color="gray.300"
+            />
+          </HStack>
           <TableContainer width={["100%", "600px"]}>
             <Table variant="simple">
               <Thead>
