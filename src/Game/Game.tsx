@@ -14,6 +14,7 @@ import {
   Text,
   Link,
   HStack,
+  useToast,
 } from "@chakra-ui/react";
 import {
   MdHelpOutline,
@@ -72,10 +73,13 @@ export const Game = () => {
   const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
   const [tileColors, setTileColors] = useState<TileColors[]>([]);
   const [score, setScore] = useState<number | null>(null);
+  const [wrongWordIndices, setWrongWordIndices] = useState<number[]>([]);
 
   const [keyColours, setKeyColours] = useState<KeyColours>({});
 
   const navigate = useNavigate();
+
+  const toast = useToast();
 
   const { user } = useAuthUser();
   const { saveScore } = useSaveScore();
@@ -163,6 +167,15 @@ export const Game = () => {
     setShowingResult.on();
   };
 
+  const triggerRowAnimation = () => {
+    setWrongWordIndices([
+      guessedLetters.length - (1 + currentWord.value.length),
+      guessedLetters.length - 1,
+    ]);
+
+    setTimeout(() => setWrongWordIndices([]), 1000);
+  };
+
   const getIndicesOfLetter = (letter: string, arr: string[]) => {
     const indices = [];
     let idx = arr.indexOf(letter);
@@ -236,6 +249,12 @@ export const Game = () => {
 
   const handleSubmit = async () => {
     if (guessedWord.length !== currentWord?.value.length) {
+      toast({
+        title: "Not enough letters",
+        status: "warning",
+        duration: 4000,
+        position: "top",
+      });
       return;
     }
 
@@ -247,6 +266,14 @@ export const Game = () => {
 
       if (!isWordFromDisctionary) {
         logIncorrectWord(guessedWord, currentWord?.value);
+        toast({
+          title: "Not in word list",
+          status: "error",
+          duration: 4000,
+          position: "top",
+        });
+
+        triggerRowAnimation();
         return;
       }
     }
@@ -350,7 +377,7 @@ export const Game = () => {
           )}
           <GameBoard
             wordLength={currentWord?.value?.length || 5}
-            {...{ guessedLetters, tileColors }}
+            {...{ guessedLetters, tileColors, wrongWordIndices }}
           />
           <Keyboard
             onLetterSelect={handleLetterSelect}

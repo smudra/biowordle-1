@@ -9,13 +9,11 @@ type Props = {
   guessedLetters: string[];
   tileColors: TileColors[];
   wordLength: number;
+  wrongWordIndices: number[];
 };
 
-export const GameBoard = ({
-  guessedLetters,
-  tileColors,
-  wordLength,
-}: Props) => {
+export const GameBoard = (props: Props) => {
+  const { guessedLetters, tileColors, wordLength, wrongWordIndices } = props;
   const [isVisible, setVisibility] = useBoolean();
 
   useEffect(() => {
@@ -23,6 +21,12 @@ export const GameBoard = ({
       setVisibility.on();
     }, 500);
   }, [setVisibility]);
+
+  const shouldShake = (index: number) => {
+    if (!wrongWordIndices.length) return false;
+    const [firstIndex, lastIndex] = wrongWordIndices;
+    return index >= firstIndex && index <= lastIndex;
+  };
 
   return (
     <Flex
@@ -48,6 +52,7 @@ export const GameBoard = ({
               className={clsx("animate__animated", {
                 animate__pulse: !!guessedLetters[i],
                 animate__flipInX: !!tileColors[i],
+                animate__shakeX: shouldShake(i),
               })}
               color="gainsboro"
               cursor="pointer"
