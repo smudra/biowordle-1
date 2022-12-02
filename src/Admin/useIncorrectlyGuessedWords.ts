@@ -11,10 +11,6 @@ type GuessedWord = {
 
 export const useIncorrectlyGuessedWords = () => {
   const [incorrectlyGuessedWords, setWords] = useState<GuessedWord[]>([]);
-  console.log(
-    "🚀 ~ file: useIncorrectlyGuessedWords.ts ~ line 8 ~ useIncorrectlyGuessedWords ~ incorrectlyGuessedWords",
-    incorrectlyGuessedWords
-  );
 
   const getWords = useCallback(async () => {
     const q = query(collection(db, "guessedWords"), orderBy("guessedWord"));

@@ -45,16 +45,35 @@ type LoaderData = {
   words: { value: string; date: string }[];
 };
 
+type KeyColours = {
+  [key: string]: TileColors;
+};
+
+const confirmKeyColor = (newColor: TileColors, existingColor: TileColors) => {
+  switch (existingColor) {
+    case TileColors.green: {
+      return TileColors.green;
+    }
+    case TileColors.yellow: {
+      return newColor === TileColors.green
+        ? TileColors.green
+        : TileColors.yellow;
+    }
+    default: {
+      return newColor;
+    }
+  }
+};
+
 const FORMAT_STRING = "y-L-d";
 
 export const Game = () => {
-  const data = useLoaderData();
-
-  console.log(data);
   const [guessedWord, setGuessedWord] = useState("");
   const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
   const [tileColors, setTileColors] = useState<TileColors[]>([]);
   const [score, setScore] = useState<number | null>(null);
+
+  const [keyColours, setKeyColours] = useState<KeyColours>({});
 
   const navigate = useNavigate();
 
@@ -93,6 +112,7 @@ export const Game = () => {
 
     setGuessedLetters(gameState.guessedLetters);
     setTileColors(gameState.tileColors);
+    setKeyColours(gameState.keyColours || {});
   }, [currentWord]);
 
   const storeGameState = useCallback(
@@ -106,6 +126,7 @@ export const Game = () => {
         currentWordValue: currentWord.value,
         guessedLetters,
         tileColors,
+        keyColours,
       };
 
       const gameStateString = JSON.stringify(gameState);
@@ -115,7 +136,7 @@ export const Game = () => {
 
       window.localStorage.setItem("gameState", JSON.stringify(gameState));
     },
-    [currentWord, guessedLetters]
+    [currentWord, guessedLetters, keyColours]
   );
 
   useEffect(() => {
@@ -158,21 +179,21 @@ export const Game = () => {
       .includes(letter.toUpperCase());
 
     if (!isCorrectLetter) {
-      return TileColors.dark;
+      return { letter, tileColor: TileColors.dark };
     }
 
     const letterInThatPosition = currentWord?.value.charAt(index).toUpperCase();
     const isCorrectPosition = letter.toUpperCase() === letterInThatPosition;
 
     if (isCorrectPosition) {
-      return TileColors.green;
+      return { letter, tileColor: TileColors.green };
     }
 
     const isGuessedMoreThanOnce =
       guessedWord.split("").filter((l) => l === letter).length > 1;
 
     if (!isGuessedMoreThanOnce) {
-      return TileColors.yellow;
+      return { letter, tileColor: TileColors.yellow };
     }
 
     const existsMoreThanOnce =
@@ -187,14 +208,14 @@ export const Game = () => {
     );
 
     if (isGuessedCorrectlyLater && !existsMoreThanOnce) {
-      return TileColors.dark;
+      return { letter, tileColor: TileColors.dark };
     }
 
     if (hasBeenGuessedAlready && !existsMoreThanOnce) {
-      return TileColors.dark;
+      return { letter, tileColor: TileColors.dark };
     }
 
-    return TileColors.yellow;
+    return { letter, tileColor: TileColors.yellow };
   };
 
   const checkIsWordFromLibrary = (word: string) => {
@@ -237,7 +258,7 @@ export const Game = () => {
 
     let i = 0;
     const timer = setInterval(() => {
-      const tileColor = colors[i];
+      const { letter, tileColor } = colors[i] || {};
       if (!tileColor) {
         i = 0;
         clearInterval(timer);
@@ -245,10 +266,15 @@ export const Game = () => {
       }
 
       setTileColors((prevColors) => [...prevColors, tileColor]);
+      setKeyColours((c) => ({
+        ...c,
+        [letter]: confirmKeyColor(tileColor, c[letter]),
+      }));
       i++;
     }, interval);
 
-    storeGameState([...tileColors, ...colors]);
+    const newTileColors = colors.map(({ tileColor }) => tileColor);
+    storeGameState([...tileColors, ...newTileColors]);
 
     if (guessedWord.toUpperCase() === currentWord?.value?.toUpperCase()) {
       setTimeout(() => {
@@ -330,6 +356,7 @@ export const Game = () => {
             onLetterSelect={handleLetterSelect}
             onEnter={handleSubmit}
             onDelete={guessedWord ? handleDelete : undefined}
+            {...{ keyColours }}
           />
         </Flex>
       </Flex>
