@@ -74,6 +74,7 @@ export const Game = () => {
   const [tileColors, setTileColors] = useState<TileColors[]>([]);
   const [score, setScore] = useState<number | null>(null);
   const [wrongWordIndices, setWrongWordIndices] = useState<number[]>([]);
+  const [gameOver, setGameOver] = useState(false);
 
   const [keyColours, setKeyColours] = useState<KeyColours>({});
 
@@ -148,9 +149,11 @@ export const Game = () => {
   }, [loadGameState]);
 
   const handleDelete = useCallback(() => {
+    if (gameOver || hasUserPlayedToday) return;
+
     setGuessedWord((prevWord) => prevWord.slice(0, -1));
     setGuessedLetters((prevArr) => prevArr.slice(0, -1));
-  }, []);
+  }, [gameOver, hasUserPlayedToday]);
 
   const calculateScore = () => {
     const numberOfCharacters = currentWord.value.length;
@@ -248,6 +251,8 @@ export const Game = () => {
   };
 
   const handleSubmit = async () => {
+    if (hasUserPlayedToday || gameOver) return;
+
     if (guessedWord.length !== currentWord?.value.length) {
       toast({
         title: "Not enough letters",
@@ -306,11 +311,13 @@ export const Game = () => {
     if (guessedWord.toUpperCase() === currentWord?.value?.toUpperCase()) {
       setTimeout(() => {
         showResult();
+        setGameOver(true);
       }, interval * (currentWord.value.length + 1));
     } else if (guessedLetters.length === currentWord.value.length * 6) {
       setTimeout(() => {
         setShowLosingModal.on();
         setGuessedWord("");
+        setGameOver(true);
       }, interval * (currentWord.value.length + 1));
     } else {
       setGuessedWord("");
@@ -318,7 +325,7 @@ export const Game = () => {
   };
 
   const handleLetterSelect = (letter: string) => {
-    if (!currentWord?.value || hasUserPlayedToday) {
+    if (!currentWord?.value || hasUserPlayedToday || gameOver) {
       return;
     }
 
