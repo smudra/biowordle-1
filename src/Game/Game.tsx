@@ -31,6 +31,7 @@ import {
 
 import { GameBoard } from "./GameBoard";
 import { Keyboard } from "./Keyboard";
+import { HowToPlay } from "./HowToPlay";
 import { useIncorrectWords } from "./useIncorrectWords";
 import { useUserPlayed } from "./useUserPlayed";
 import { useAuthUser } from "../hooks/useAuthUser";
@@ -87,6 +88,7 @@ export const Game = () => {
 
   const [isShowingResult, setShowingResult] = useBoolean();
   const [isShowingLosingModal, setShowLosingModal] = useBoolean();
+  const [isShowingHelp, setHelp] = useBoolean();
 
   const { words } = useLoaderData() as LoaderData;
   const { logIncorrectWord } = useIncorrectWords();
@@ -358,7 +360,13 @@ export const Game = () => {
             width="100%"
             padding="12px"
           >
-            <Icon as={MdHelpOutline} color="#fff" boxSize="24px" />
+            <Icon
+              as={MdHelpOutline}
+              color="#fff"
+              boxSize="24px"
+              onClick={setHelp.on}
+              cursor="pointer"
+            />
             <Heading as="h1" color="#fff" margin="0">
               BioWordle
             </Heading>
@@ -469,6 +477,8 @@ export const Game = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      <HowToPlay isOpen={isShowingHelp} onClose={setHelp.off} />
     </>
   );
 };
