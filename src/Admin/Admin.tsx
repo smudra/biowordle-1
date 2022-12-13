@@ -10,7 +10,7 @@ import {
   Stack,
   useToast,
 } from "@chakra-ui/react";
-import { format, isPast, isToday } from "date-fns";
+import { format, isPast, isToday, endOfDay } from "date-fns";
 import "react-calendar/dist/Calendar.css";
 
 import { BackButton } from "../BackButton";
@@ -22,7 +22,7 @@ import { useIncorrectlyGuessedWords } from "./useIncorrectlyGuessedWords";
 const FORMAT_STRING = "y-L-d";
 
 export const Admin = () => {
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(endOfDay(new Date()));
   const [word, setWord] = useState("");
   const [averageScore, setAverageScore] = useState(0);
 
@@ -33,15 +33,19 @@ export const Admin = () => {
   const { getAverageOfWord } = useGetAverageScore();
   const { incorrectlyGuessedWords } = useIncorrectlyGuessedWords();
 
+  const getWordForDate = useCallback(() => {
+    const dateString = format(date, FORMAT_STRING);
+    return words.find(({ date }) => date === dateString);
+  }, [date, words]);
+
   useEffect(() => {
     if (!words?.length) {
       return;
     }
 
-    const dateString = format(date, FORMAT_STRING);
-    const selectedWord = words.find(({ date }) => date === dateString);
+    const selectedWord = getWordForDate();
     setWord(selectedWord?.value || "");
-  }, [date, words]);
+  }, [getWordForDate, words]);
 
   const setAverage = useCallback(async () => {
     const average = await getAverageOfWord(word);
@@ -53,8 +57,6 @@ export const Admin = () => {
       return;
     }
 
-    console.log("calling/");
-
     setAverage();
   }, [date, word, setAverage]);
 
@@ -63,9 +65,11 @@ export const Admin = () => {
   };
 
   const handleSaveWord = async () => {
+    const wordForDate = getWordForDate();
+
     try {
       const dateString = format(date, FORMAT_STRING);
-      if (isPast(date) || isToday(date)) {
+      if (isPast(date) || (isToday(date) && !!wordForDate)) {
         throw new Error("Can only change words for future dates");
       }
       await saveWord(word, dateString);
