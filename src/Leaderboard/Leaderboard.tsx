@@ -27,6 +27,7 @@ export const Leaderboard = () => {
       bgColor="gray.700"
       height="100%"
       padding="24px"
+      overflowY="auto"
     >
       <Stack spacing="64px">
         <Stack>

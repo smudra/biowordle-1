@@ -351,7 +351,7 @@ export const Game = () => {
           maxWidth="500px"
           height="100%"
           flexDirection="column"
-          width="100%"
+          width="90%"
         >
           <Flex
             alignItems="center"

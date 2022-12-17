@@ -33,8 +33,9 @@ export const GameBoard = (props: Props) => {
       justifyContent="center"
       align-items="center"
       flexGrow="1"
-      overflow="hidden"
+      overflowY="auto"
       flexDirection="column"
+      width="100%"
     >
       <Box
         boxSizing="border-box"
@@ -43,6 +44,7 @@ export const GameBoard = (props: Props) => {
         gridTemplateColumns={`repeat(${wordLength}, 1fr)`}
         padding="10px"
         alignItems="center"
+        width="100%"
       >
         {isVisible &&
           Array.from({ length: wordLength * 6 }).map((_, i) => (
@@ -59,12 +61,12 @@ export const GameBoard = (props: Props) => {
               fontSize={["24px", "32px", "32px"]}
               fontWeight="bold"
               key={i.toString()}
-              minHeight={["50px", "60px", "60px"]}
-              minWidth={["50px", "60px", "60px"]}
+              width="100%"
               textTransform="uppercase"
               userSelect="none"
               bgColor={tileColors[i]}
               borderColor={tileColors[i]}
+              __css={{ aspectRatio: "1/1" }}
             >
               {guessedLetters[i]}
             </Center>
