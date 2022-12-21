@@ -11,6 +11,8 @@ import {
   FormControl,
   FormLabel,
   HStack,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { useNavigate, useNavigation, Form } from "react-router-dom";
 import type { ActionFunctionArgs } from "react-router-dom";
@@ -34,7 +36,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   await updateProfile(auth.currentUser, { displayName: name });
-  await updateDoc(doc(db, "scores", auth.currentUser.uid), { name });
+  try {
+    await updateDoc(doc(db, "scores", auth.currentUser.uid), { name });
+  } catch (error) {
+    // don't throw
+  }
 };
 
 const actionCodeSettings = {
@@ -121,13 +127,18 @@ export const Profile = () => {
                 <Text color="gray.100" fontSize="36px" fontWeight={500}>
                   Hello, {name}
                 </Text>
-              ) : null}
-              <Text color="gray.300">You are signed in as {user.email}</Text>
+              ) : (
+                <Alert status="warning" marginBottom="12px">
+                  <AlertIcon />
+                  Please add a username to continue
+                </Alert>
+              )}
+              <Text color="gray.300">You are signed in with {user.email}</Text>
             </div>
 
             <Form method="post">
               <FormControl maxWidth="300px">
-                <FormLabel color="gray.300">Nickname</FormLabel>
+                <FormLabel color="gray.300">Username</FormLabel>
                 <HStack>
                   <Input
                     defaultValue={user.displayName || undefined}

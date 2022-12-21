@@ -84,6 +84,13 @@ export const Game = () => {
   const toast = useToast();
 
   const { user } = useAuthUser();
+
+  useEffect(() => {
+    if (user && !user.displayName) {
+      navigate("profile");
+    }
+  }, [navigate, user]);
+
   const { saveScore } = useSaveScore();
 
   const [isShowingResult, setShowingResult] = useBoolean();
