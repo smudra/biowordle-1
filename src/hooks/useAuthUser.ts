@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { useBoolean } from "@chakra-ui/react";
 
+import { adminIds } from "../vars";
 import { auth } from "../../config/firebase";
 
 type UseAuthUser = () => {
+  isAdmin: boolean;
   loading: boolean;
   user?: User;
 };
@@ -25,5 +27,11 @@ export const useAuthUser: UseAuthUser = () => {
     });
   }, [setLoading]);
 
-  return { loading, user };
+  const isAdmin = useMemo(() => {
+    if (!user) return false;
+
+    return adminIds.includes(user.uid);
+  }, [user]);
+
+  return { loading, user, isAdmin };
 };

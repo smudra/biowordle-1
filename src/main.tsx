@@ -9,6 +9,7 @@ import {
 import { ChakraProvider } from "@chakra-ui/react";
 
 import { App } from "./App";
+import { Auth } from "./Auth";
 import { Game, loader as gameLoader } from "./Game";
 import { Admin } from "./Admin";
 import { Profile, action as profileAction } from "./Profile";
@@ -23,6 +24,7 @@ const router = createBrowserRouter(
       <Route path="/admin" element={<Admin />} />
       <Route path="/profile" element={<Profile />} action={profileAction} />
       <Route path="/leaderboard" element={<Leaderboard />} />
+      <Route path="/__auth/*" element={<Auth />} />
     </Route>
   )
 );

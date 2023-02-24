@@ -350,7 +350,7 @@ export const Game = () => {
         bgColor="rgb(18, 18, 19)"
         alignItems="center"
         flexDirection="column"
-        height="100%"
+        minHeight="100vh"
         width="100%"
       >
         <Flex
@@ -397,16 +397,24 @@ export const Game = () => {
           {hasUserPlayedToday && (
             <Text color="red.300">You have already played today!</Text>
           )}
-          <GameBoard
-            wordLength={currentWord?.value?.length || 5}
-            {...{ guessedLetters, tileColors, wrongWordIndices }}
-          />
-          <Keyboard
-            onLetterSelect={handleLetterSelect}
-            onEnter={handleSubmit}
-            onDelete={guessedWord ? handleDelete : undefined}
-            {...{ keyColours }}
-          />
+          <Flex
+            alignItems="center"
+            flexDir="column"
+            flex={1}
+            justifyContent="space-between"
+            width="100%"
+          >
+            <GameBoard
+              wordLength={currentWord?.value?.length || 5}
+              {...{ guessedLetters, tileColors, wrongWordIndices }}
+            />
+            <Keyboard
+              onLetterSelect={handleLetterSelect}
+              onEnter={handleSubmit}
+              onDelete={guessedWord ? handleDelete : undefined}
+              {...{ keyColours }}
+            />
+          </Flex>
         </Flex>
       </Flex>
 

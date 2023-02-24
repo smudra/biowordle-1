@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import Calendar from "react-calendar";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Flex,
@@ -15,6 +16,7 @@ import "react-calendar/dist/Calendar.css";
 
 import { BackButton } from "../BackButton";
 import { useGetWords } from "../hooks/useGetWords";
+import { useAuthUser } from "../hooks/useAuthUser";
 import { useSaveWord } from "./useSaveWord";
 import { useGetAverageScore } from "./useGetAverageScore";
 import { useIncorrectlyGuessedWords } from "./useIncorrectlyGuessedWords";
@@ -27,11 +29,19 @@ export const Admin = () => {
   const [averageScore, setAverageScore] = useState(0);
 
   const toast = useToast();
+  const navigate = useNavigate();
 
   const { words, refetch } = useGetWords();
   const { saveWord, isSaving } = useSaveWord();
   const { getAverageOfWord } = useGetAverageScore();
   const { incorrectlyGuessedWords } = useIncorrectlyGuessedWords();
+  const { isAdmin, user } = useAuthUser();
+
+  useEffect(() => {
+    if (!!user && !isAdmin) {
+      return navigate("/");
+    }
+  }, [isAdmin, navigate, user]);
 
   const getWordForDate = useCallback(() => {
     const dateString = format(date, FORMAT_STRING);

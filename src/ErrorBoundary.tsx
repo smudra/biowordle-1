@@ -9,8 +9,14 @@ import {
   Link,
 } from "@chakra-ui/react";
 
+import { useAuthUser } from "./hooks/useAuthUser";
+import { adminIds } from "./vars";
+
 export const ErrorBoundary = () => {
   const error = useRouteError() as { error: unknown };
+
+  const { user } = useAuthUser();
+  const isAdmin = !!user && adminIds.includes(user?.uid);
 
   let errorMessage = "Something went wrong.";
   if (error instanceof Error) {
@@ -34,13 +40,19 @@ export const ErrorBoundary = () => {
         </AlertTitle>
         <AlertDescription maxWidth="sm">{errorMessage}</AlertDescription>
       </Alert>
-      <Text marginY="36px">
-        Are you an admin?{" "}
-        <Link as={RouterLink} to="profile">
-          Click here to login
+      {isAdmin ? (
+        <Link as={RouterLink} marginY="36px" to="admin">
+          Go to Admin
         </Link>
-        .
-      </Text>
+      ) : (
+        <Text marginY="36px">
+          Are you an admin?{" "}
+          <Link as={RouterLink} to="profile">
+            Click here to login
+          </Link>
+          .
+        </Text>
+      )}
     </Center>
   );
 };

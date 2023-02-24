@@ -99,7 +99,7 @@ export const Keyboard = (props: KeyboardProps) => {
   }, [handleKeyPress, onDelete]);
 
   return (
-    <Box height="200px" marginBottom="24px" width="100%">
+    <Box bgColor="rgb(18, 18, 19)" marginBottom="24px" width="100%">
       <KeyboardRow>
         {KEYS[0].map((key) => (
           <Key

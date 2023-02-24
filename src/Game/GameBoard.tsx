@@ -68,6 +68,7 @@ export const GameBoard = (props: Props) => {
         gridTemplateColumns={`repeat(${wordLength}, 1fr)`}
         padding="10px"
         alignItems="center"
+        overflow="visible"
       >
         {isVisible &&
           Array.from({ length: wordLength * 6 }).map((_, i) => (
