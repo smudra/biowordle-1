@@ -22,7 +22,7 @@ import {
   MdOutlineAccountCircle,
 } from "react-icons/md";
 import { BsTwitter } from "react-icons/bs";
-import { format } from "date-fns";
+import { format, sub } from "date-fns";
 import {
   Link as RouterLink,
   useLoaderData,
@@ -96,6 +96,7 @@ export const Game = () => {
   const [isShowingResult, setShowingResult] = useBoolean();
   const [isShowingLosingModal, setShowLosingModal] = useBoolean();
   const [isShowingHelp, setHelp] = useBoolean();
+  const [isSubmitting, setSubmitting] = useBoolean();
 
   const { words } = useLoaderData() as LoaderData;
   const { logIncorrectWord } = useIncorrectWords();
@@ -260,7 +261,7 @@ export const Game = () => {
   };
 
   const handleSubmit = async () => {
-    if (hasUserPlayedToday || gameOver) return;
+    if (hasUserPlayedToday || gameOver || isSubmitting) return;
 
     if (guessedWord.length !== currentWord?.value.length) {
       toast({
@@ -272,6 +273,7 @@ export const Game = () => {
       return;
     }
 
+    setSubmitting.on();
     const isWordFromLibrary = checkIsWordFromLibrary(guessedWord);
     if (!isWordFromLibrary) {
       const isWordFromDisctionary = await checkIsWordFromDictionary(
@@ -288,6 +290,7 @@ export const Game = () => {
         });
 
         triggerRowAnimation();
+        setSubmitting.off();
         return;
       }
     }
@@ -321,14 +324,17 @@ export const Game = () => {
       setTimeout(() => {
         showResult();
         setGameOver(true);
+        setSubmitting.off();
       }, interval * (currentWord.value.length + 1));
     } else if (guessedLetters.length === currentWord.value.length * 6) {
       setTimeout(() => {
         setShowLosingModal.on();
         setGuessedWord("");
         setGameOver(true);
+        setSubmitting.off();
       }, interval * (currentWord.value.length + 1));
     } else {
+      setSubmitting.off();
       setGuessedWord("");
     }
   };
