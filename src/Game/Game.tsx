@@ -14,6 +14,7 @@ import {
   Text,
   Link,
   HStack,
+  Stack,
   useToast,
 } from "@chakra-ui/react";
 import {
@@ -22,7 +23,7 @@ import {
   MdOutlineAccountCircle,
 } from "react-icons/md";
 import { BsTwitter } from "react-icons/bs";
-import { format, sub } from "date-fns";
+import { format } from "date-fns";
 import {
   Link as RouterLink,
   useLoaderData,
@@ -430,39 +431,39 @@ export const Game = () => {
           <ModalHeader>Congrats!</ModalHeader>
           <ModalCloseButton />
           <ModalBody marginBottom="36px">
-            <Text marginBottom="24px">
-              You successfully guessed {"today's"} word{" "}
-              <Text as="span" fontWeight="bold">
-                {currentWord.value}
-              </Text>
-              , earning yourself {score} points!
-            </Text>
-            <Text marginBottom="24px">
-              Check back tomorrow to play the next word.
-            </Text>
-
-            {!user && (
+            <Stack spacing="16px">
               <Text>
-                If you want to keep track of your scores and compete with other
-                BioWordle users, why not create an account?{" "}
-                <Link as={RouterLink} to="/profile">
-                  Click here
-                </Link>{" "}
-                to set it up.
+                You successfully guessed {"today's"} word{" "}
+                <Text as="span" fontWeight="bold">
+                  {currentWord.value}
+                </Text>
+                , earning yourself {score} points!
               </Text>
-            )}
+              <Text>Check back tomorrow to play the next word.</Text>
 
-            <Button
-              as={Link}
-              bgColor="blue.300"
-              color="#fff"
-              _hover={{ bgColor: "blue.400" }}
-              rightIcon={<BsTwitter />}
-              href={`https://twitter.com/intent/tweet?text=I%20scored%20${score}%20points%20in%20today's%20BioWordle.`}
-              target="_blank"
-            >
-              Share to Twitter
-            </Button>
+              {!user && (
+                <Text>
+                  If you want to keep track of your scores and compete with
+                  other BioWordle users, why not create an account?{" "}
+                  <Link as={RouterLink} to="/profile" color="#2cb0eb">
+                    Click here
+                  </Link>{" "}
+                  to set it up.
+                </Text>
+              )}
+
+              <Button
+                as={Link}
+                bgColor="blue.300"
+                color="#fff"
+                _hover={{ bgColor: "blue.400" }}
+                rightIcon={<BsTwitter />}
+                href={`https://twitter.com/intent/tweet?text=I%20scored%20${score}%20points%20in%20today's%20BioWordle.`}
+                target="_blank"
+              >
+                Share to Twitter
+              </Button>
+            </Stack>
           </ModalBody>
         </ModalContent>
       </Modal>
