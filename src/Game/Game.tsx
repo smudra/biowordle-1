@@ -15,6 +15,7 @@ import {
   Link,
   HStack,
   Stack,
+  Image,
   useToast,
 } from "@chakra-ui/react";
 import {
@@ -423,6 +424,9 @@ export const Game = () => {
             />
           </Flex>
         </Flex>
+        <a href="https://puresoluble.com/" target="_blank" rel="noreferrer">
+          <Image src="Pur_Logo_TM.png" width="200px" />
+        </a>
       </Flex>
 
       <Modal isOpen={isShowingResult} onClose={setShowingResult.off}>
